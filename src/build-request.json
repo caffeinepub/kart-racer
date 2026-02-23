@@ -1,0 +1,141 @@
+{
+  "kind": "build_request",
+  "title": "Create Mario Kart-style racing game with 10+ characters",
+  "projectName": "Kart Racer",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Create a 3D kart racing game using Three.js with React Three Fiber featuring a track environment with proper collision detection and physics",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "i want to create a racing game like super mario cart"
+        ]
+      },
+      "acceptanceCriteria": [
+        "3D racing track is rendered with Three.js",
+        "Karts have physics-based movement and handling",
+        "Track boundaries prevent karts from leaving the course",
+        "Camera follows the player's kart from behind"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Implement at least 10 distinct playable characters, each with a unique kart design and visual appearance that players can select before racing",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "I want there to be at least 10 characters"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Character selection screen displays all 10+ characters",
+        "Each character has a unique 3D kart model or color scheme",
+        "Selected character is used in the race",
+        "Character names and basic attributes are displayed"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Implement Mario Kart-style racing mechanics including acceleration, braking, drifting/power sliding, and item-based power-ups that affect gameplay",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "make it just like the mechanics of mario bro"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Karts accelerate and brake with keyboard controls",
+        "Drifting mechanic allows for tighter turns and speed boosts",
+        "Power-up items appear on the track that can be collected",
+        "Items can be used to gain advantages or hinder opponents",
+        "Lap counter tracks player progress through the race"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Create a race state management system that tracks player position, lap count, race time, and handles race start/finish conditions",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "i want to create a racing game like super mario cart"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Race countdown starts the game (3-2-1-GO)",
+        "Current lap and total laps are displayed",
+        "Race time is tracked and shown",
+        "Race ends when player completes all laps",
+        "Final results screen shows completion time"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Store race completion records in the backend including character used, completion time, and track name to maintain leaderboards",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "i want to create a racing game like super mario cart"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Race results are saved to backend storage",
+        "Leaderboard data can be retrieved and displayed",
+        "Records include player identity, character, time, and date"
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Design a vibrant, colorful racing game aesthetic with a playful cartoon style reminiscent of classic kart racers, using bright colors, smooth animations, and energetic UI elements throughout the entire application",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Color palette uses bright, saturated colors throughout",
+        "UI elements have rounded corners and playful typography",
+        "Animations are smooth and energetic",
+        "Visual theme is consistent across all screens"
+      ]
+    }
+  ],
+  "constraints": [
+    "Use Three.js with React Three Fiber for all 3D graphics",
+    "All game logic must run client-side in the frontend",
+    "Backend only stores persistent data like leaderboards"
+  ],
+  "nonGoals": [
+    "Multiplayer racing functionality",
+    "AI-controlled opponent racers",
+    "Multiple race tracks",
+    "Complex vehicle customization system",
+    "Audio and sound effects"
+  ],
+  "imageRequirements": {
+    "required": [
+      "Colorful cartoon-style racing track background with checkered flags and banners (track-background.dim_1920x1080.png)",
+      "Character selection grid showing 10 unique kart racer portraits in vibrant cartoon style (character-portraits.dim_1200x800.png)",
+      "Power-up item icons including speed boost, shield, and projectile in bright colors (powerup-icons.dim_512x512.png)",
+      "Racing game logo with bold playful lettering and kart silhouette (game-logo.dim_800x400.png)"
+    ],
+    "edits": []
+  }
+}

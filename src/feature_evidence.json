@@ -1,0 +1,114 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-create-a-3d-kart-racing-game-using-three-js-with-react-three-fiber-featuring-a-track-environment-with-proper-collision-detection-and-physics",
+      "featureTitle": "Create a 3D kart racing game using Three.js with React Three Fiber featuring a track environment with proper collision detection and physics",
+      "files": [
+        "frontend/src/components/PlayerKart.tsx",
+        "frontend/src/components/RaceCamera.tsx",
+        "frontend/src/components/RaceTrack.tsx",
+        "frontend/src/hooks/useCollisionDetection.ts",
+        "frontend/src/hooks/usePhysics.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-at-least-10-distinct-playable-characters-each-with-a-unique-kart-design-and-visual-appearance-that-players-can-select-before-racing",
+      "featureTitle": "Implement at least 10 distinct playable characters, each with a unique kart design and visual appearance that players can select before racing",
+      "files": [
+        "frontend/src/components/CharacterCard.tsx",
+        "frontend/src/data/characters.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-mario-kart-style-racing-mechanics-including-acceleration-braking-drifting-power-sliding-and-item-based-power-ups-that-affect-gameplay",
+      "featureTitle": "Implement Mario Kart-style racing mechanics including acceleration, braking, drifting/power sliding, and item-based power-ups that affect gameplay",
+      "files": [
+        "frontend/src/components/PowerUpItem.tsx",
+        "frontend/src/data/powerups.ts",
+        "frontend/src/hooks/useDrifting.ts",
+        "frontend/src/hooks/useKartControls.ts",
+        "frontend/src/hooks/useLapTracking.ts",
+        "frontend/src/hooks/usePowerUps.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-create-a-race-state-management-system-that-tracks-player-position-lap-count-race-time-and-handles-race-start-finish-conditions",
+      "featureTitle": "Create a race state management system that tracks player position, lap count, race time, and handles race start/finish conditions",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/RaceCountdown.tsx",
+        "frontend/src/components/RaceHUD.tsx",
+        "frontend/src/hooks/useLeaderboard.ts",
+        "frontend/src/hooks/useRaceState.ts",
+        "frontend/src/hooks/useRaceTimer.ts",
+        "frontend/src/hooks/useSaveRace.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-design-a-vibrant-colorful-racing-game-aesthetic-with-a-playful-cartoon-style-reminiscent-of-classic-kart-racers-using-bright-colors-smooth-animations-and-energetic-ui-elements-throughout-the-entire-application",
+      "featureTitle": "Design a vibrant, colorful racing game aesthetic with a playful cartoon style reminiscent of classic kart racers, using bright colors, smooth animations, and energetic UI elements throughout the entire application",
+      "files": [
+        "frontend/src/components/GameLogo.tsx",
+        "frontend/src/components/Layout.tsx",
+        "frontend/src/index.css",
+        "frontend/tailwind.config.js"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

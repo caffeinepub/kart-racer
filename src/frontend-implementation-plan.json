@@ -1,0 +1,214 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Create Mario Kart-style 3D Racing Game",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Create a 3D kart racing game using Three.js with React Three Fiber featuring a track environment with proper collision detection and physics",
+      "acceptanceCriteria": [
+        "3D racing track is rendered with Three.js",
+        "Karts have physics-based movement and handling",
+        "Track boundaries prevent karts from leaving the course",
+        "Camera follows the player's kart from behind"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/RaceTrack.tsx",
+          "operation": "create",
+          "description": "Create the main 3D race track component using React Three Fiber. Render a looping circuit-style track with textured ground plane, track boundaries (walls/barriers), checkered patterns, and environmental elements. Use the generated track background image at frontend/public/assets/generated/track-background.dim_1920x1080.png as a skybox or backdrop texture. Implement collision detection using Three.js raycasting or bounding boxes to prevent karts from leaving the track."
+        },
+        {
+          "path": "frontend/src/components/PlayerKart.tsx",
+          "operation": "create",
+          "description": "Create the player kart 3D model component with physics-based movement. Implement acceleration, deceleration, steering, and gravity using velocity vectors and force calculations. Apply rotation transforms for turning and tilting. Ensure the kart responds to keyboard input with realistic momentum and friction."
+        },
+        {
+          "path": "frontend/src/components/RaceCamera.tsx",
+          "operation": "create",
+          "description": "Create a third-person camera component that follows the player's kart from behind. Use React Three Fiber's camera controls to maintain a fixed offset position relative to the kart. Implement smooth camera transitions using lerp interpolation and ensure the camera rotates to follow the kart's direction."
+        },
+        {
+          "path": "frontend/src/hooks/usePhysics.ts",
+          "operation": "create",
+          "description": "Create a custom hook to manage physics calculations for kart movement including velocity, acceleration, friction, and collision responses. Handle frame-by-frame position updates and boundary checking. Return current position, velocity, and update functions."
+        },
+        {
+          "path": "frontend/src/hooks/useCollisionDetection.ts",
+          "operation": "create",
+          "description": "Create a custom hook to handle collision detection between the kart and track boundaries. Use Three.js raycasting or bounding box intersection tests. Return collision state and correction vectors to keep the kart within bounds."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Implement at least 10 distinct playable characters, each with a unique kart design and visual appearance that players can select before racing",
+      "acceptanceCriteria": [
+        "Character selection screen displays all 10+ characters",
+        "Each character has a unique 3D kart model or color scheme",
+        "Selected character is used in the race",
+        "Character names and basic attributes are displayed"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/data/characters.ts",
+          "operation": "create",
+          "description": "Create a characters data file defining at least 10 unique characters. Each character should have id, name, description, kartColor (hex value), and optional stat attributes. Export as a constant array for use throughout the app."
+        },
+        {
+          "path": "frontend/src/components/CharacterSelection.tsx",
+          "operation": "create",
+          "description": "Create the character selection screen component displaying all 10+ characters in a grid layout. Use the generated character portraits image at frontend/public/assets/generated/character-portraits.dim_1200x800.png as the visual asset for character avatars. Each character card should show name, portrait, and allow selection. Implement click handlers to update the selected character state and navigate to the race when a character is chosen."
+        },
+        {
+          "path": "frontend/src/components/CharacterCard.tsx",
+          "operation": "create",
+          "description": "Create a reusable character card component that displays a single character's portrait, name, and selection state. Apply hover effects and highlight the selected character with borders or shadows. Use playful, colorful styling consistent with the cartoon racing theme."
+        },
+        {
+          "path": "frontend/src/hooks/useCharacterSelection.ts",
+          "operation": "create",
+          "description": "Create a custom hook to manage character selection state. Track the currently selected character and provide functions to update the selection. Persist the selected character to be used during the race."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Implement Mario Kart-style racing mechanics including acceleration, braking, drifting/power sliding, and item-based power-ups that affect gameplay",
+      "acceptanceCriteria": [
+        "Karts accelerate and brake with keyboard controls",
+        "Drifting mechanic allows for tighter turns and speed boosts",
+        "Power-up items appear on the track that can be collected",
+        "Items can be used to gain advantages or hinder opponents",
+        "Lap counter tracks player progress through the race"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useKartControls.ts",
+          "operation": "create",
+          "description": "Create a custom hook to handle keyboard input for kart controls. Listen for arrow keys or WASD for acceleration, braking, steering left/right, and drifting. Track key states and return control values (throttle, brake, steer, drift) for use in physics calculations."
+        },
+        {
+          "path": "frontend/src/hooks/useDrifting.ts",
+          "operation": "create",
+          "description": "Create a custom hook to manage the drifting mechanic. Track drift state, duration, and calculate speed boost rewards when drift is released after sufficient duration. Apply tighter turning radius during drift and visual effects like tire marks or particle trails."
+        },
+        {
+          "path": "frontend/src/data/powerups.ts",
+          "operation": "create",
+          "description": "Define power-up items data including types like speed boost, shield, and projectile. Each power-up should have id, name, effect type, duration, and visual properties. Use the generated power-up icons at frontend/public/assets/generated/powerup-icons.dim_512x512.png for item visuals. Export as a constant array."
+        },
+        {
+          "path": "frontend/src/components/PowerUpItem.tsx",
+          "operation": "create",
+          "description": "Create a 3D power-up item component that appears on the race track at fixed positions. Render floating item boxes or icons that rotate and bob. Implement collision detection with the player kart to trigger collection. Use the generated power-up icons at frontend/public/assets/generated/powerup-icons.dim_512x512.png as textures."
+        },
+        {
+          "path": "frontend/src/hooks/usePowerUps.ts",
+          "operation": "create",
+          "description": "Create a custom hook to manage power-up collection and activation. Track collected items, active effects, and handle item usage triggers. Apply effect logic (speed boost, invincibility, etc.) and manage effect timers."
+        },
+        {
+          "path": "frontend/src/hooks/useLapTracking.ts",
+          "operation": "create",
+          "description": "Create a custom hook to track lap progress and completion. Define checkpoint positions along the track and detect when the player passes through them in order. Increment lap count when all checkpoints are crossed. Return current lap, total laps, and lap completion events."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Create a race state management system that tracks player position, lap count, race time, and handles race start/finish conditions",
+      "acceptanceCriteria": [
+        "Race countdown starts the game (3-2-1-GO)",
+        "Current lap and total laps are displayed",
+        "Race time is tracked and shown",
+        "Race ends when player completes all laps",
+        "Final results screen shows completion time"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/RaceGame.tsx",
+          "operation": "create",
+          "description": "Create the main race game component that orchestrates the entire race experience. Integrate RaceTrack, PlayerKart, RaceCamera, PowerUpItems, and RaceHUD. Manage race state lifecycle including countdown, active racing, and race completion. Handle the transition to the results screen when the race ends."
+        },
+        {
+          "path": "frontend/src/hooks/useRaceState.ts",
+          "operation": "create",
+          "description": "Create a custom hook to manage overall race state including countdown timer, race status (waiting/countdown/racing/finished), current lap, total laps (default 3), and race elapsed time. Provide functions to start countdown, begin race, and finish race. Return all state values and control functions."
+        },
+        {
+          "path": "frontend/src/components/RaceCountdown.tsx",
+          "operation": "create",
+          "description": "Create a countdown overlay component that displays 3-2-1-GO sequence before the race starts. Use large, bold, animated text with vibrant colors. Fade out after GO signal and trigger race start callback."
+        },
+        {
+          "path": "frontend/src/components/RaceHUD.tsx",
+          "operation": "create",
+          "description": "Create a heads-up display component showing current lap count (e.g., Lap 1/3), race time in minutes:seconds:milliseconds format, current speed, collected power-up, and any active effects. Position HUD elements at screen corners with playful, colorful styling."
+        },
+        {
+          "path": "frontend/src/components/RaceResults.tsx",
+          "operation": "create",
+          "description": "Create a race results screen component displaying final completion time, character used, and a victory message. Include a button to return to character selection and a button to view the leaderboard. Use celebratory styling with bright colors and animations. Call the backend saveRaceDetails method to persist the race result."
+        },
+        {
+          "path": "frontend/src/hooks/useRaceTimer.ts",
+          "operation": "create",
+          "description": "Create a custom hook to track race elapsed time using requestAnimationFrame or setInterval. Start timer when race begins, pause when race ends, and return formatted time string and raw milliseconds."
+        },
+        {
+          "path": "frontend/src/components/Leaderboard.tsx",
+          "operation": "create",
+          "description": "Create a leaderboard component that retrieves and displays race records for a given track. Call the backend getTrackLeaderboard method to fetch top times. Display username, character, and completion time in a sorted table. Use colorful, playful styling with alternating row colors and trophy icons for top positions."
+        },
+        {
+          "path": "frontend/src/hooks/useLeaderboard.ts",
+          "operation": "create",
+          "description": "Create a custom hook to fetch leaderboard data from the backend. Call the backend.getTrackLeaderboard method with the track name. Handle loading states, errors, and return the sorted leaderboard entries."
+        },
+        {
+          "path": "frontend/src/hooks/useSaveRace.ts",
+          "operation": "create",
+          "description": "Create a custom hook to save race results to the backend. Accept username, character, track, and completion time as parameters. Call the backend.saveRaceDetails method and handle success/error states. Return save function and status."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Update the App component to include routing for CharacterSelection, RaceGame, RaceResults, and Leaderboard views. Wrap the app content with the Layout component to ensure consistent theming. Use React Router or a simple conditional rendering based on game state to navigate between screens."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Design a vibrant, colorful racing game aesthetic with a playful cartoon style reminiscent of classic kart racers, using bright colors, smooth animations, and energetic UI elements throughout the entire application",
+      "acceptanceCriteria": [
+        "Color palette uses bright, saturated colors throughout",
+        "UI elements have rounded corners and playful typography",
+        "Animations are smooth and energetic",
+        "Visual theme is consistent across all screens"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Extend the existing global styles with a vibrant racing game color palette using CSS custom properties. Define primary colors (bright reds, blues, yellows), accent colors, and gradients. Set default font-family to a playful, rounded sans-serif (e.g., 'Fredoka One', 'Baloo 2', or similar). Add smooth transition properties globally for hover states and animations."
+        },
+        {
+          "path": "frontend/tailwind.config.js",
+          "operation": "modify",
+          "description": "Extend Tailwind configuration with custom theme colors matching the racing game aesthetic (e.g., racing-red, kart-blue, boost-yellow, track-green). Add custom border-radius values for extra-rounded corners. Include playful font families and custom animation keyframes for energetic effects like bounce, pulse, and slide-in."
+        },
+        {
+          "path": "frontend/src/components/GameLogo.tsx",
+          "operation": "create",
+          "description": "Create a game logo component using the generated racing game logo at frontend/public/assets/generated/game-logo.dim_800x400.png. Display the logo prominently on the character selection screen and race results screen. Apply subtle animations like gentle bobbing or pulsing glow effects."
+        },
+        {
+          "path": "frontend/src/components/Layout.tsx",
+          "operation": "create",
+          "description": "Create a layout wrapper component that provides consistent styling and structure across all screens. Include the game logo at the top, apply background gradients or the track background, and ensure all child components inherit the playful, colorful theme."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "Racing game inspired by Mario Kart with at least 10 playable characters and Mario-style mechanics",
+  "architectural_notes": [
+    "Kart racing mechanics inspired by Mario Kart",
+    "Character roster system supporting 10+ characters",
+    "Mario-style physics and controls"
+  ],
+  "known_issues": [],
+  "isFixRequest": false,
+  "imageRequirements": "## Required Images\n- Colorful cartoon-style racing track background with checkered flags and banners (track-background.dim_1920x1080.png)\n- Character selection grid showing 10 unique kart racer portraits in vibrant cartoon style (character-portraits.dim_1200x800.png)\n- Power-up item icons including speed boost, shield, and projectile in bright colors (powerup-icons.dim_512x512.png)\n- Racing game logo with bold playful lettering and kart silhouette (game-logo.dim_800x400.png)",
+  "existing_features": [
+    {
+      "id": "feature-create-a-3d-kart-racing-game-using-three-js-with-react-three-fiber-featuring-a-track-environment-with-proper-collision-detection-and-physics",
+      "title": "Create a 3D kart racing game using Three.js with React Three Fiber featuring a track environment with proper collision detection and physics",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-at-least-10-distinct-playable-characters-each-with-a-unique-kart-design-and-visual-appearance-that-players-can-select-before-racing",
+      "title": "Implement at least 10 distinct playable characters, each with a unique kart design and visual appearance that players can select before racing",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-mario-kart-style-racing-mechanics-including-acceleration-braking-drifting-power-sliding-and-item-based-power-ups-that-affect-gameplay",
+      "title": "Implement Mario Kart-style racing mechanics including acceleration, braking, drifting/power sliding, and item-based power-ups that affect gameplay",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-race-state-management-system-that-tracks-player-position-lap-count-race-time-and-handles-race-start-finish-conditions",
+      "title": "Create a race state management system that tracks player position, lap count, race time, and handles race start/finish conditions",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-design-a-vibrant-colorful-racing-game-aesthetic-with-a-playful-cartoon-style-reminiscent-of-classic-kart-racers-using-bright-colors-smooth-animations-and-energetic-ui-elements-throughout-the-entire-application",
+      "title": "Design a vibrant, colorful racing game aesthetic with a playful cartoon style reminiscent of classic kart racers, using bright colors, smooth animations, and energetic UI elements throughout the entire application",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Create racing game with Mario Kart-style gameplay",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Implement at least 10 playable characters",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Implement Mario-style game mechanics",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Store race completion records in the backend including character used, completion time, and track name to maintain leaderboards",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "3d",
+  "projectName": "Kart Racer",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}
