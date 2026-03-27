@@ -1,8 +1,9 @@
-import { useState, useCallback } from 'react';
-import { Character } from '../data/characters';
+import { useCallback, useState } from "react";
+import type { Character } from "../data/characters";
 
-export function usePhysics(character: Character) {
+export function usePhysics(_character: Character) {
   const [velocity, setVelocity] = useState({ x: 0, z: 0 });
+  const [currentAngle, setCurrentAngle] = useState(Math.PI); // Start facing forward (negative Z)
 
   const updatePhysics = useCallback(
     (
@@ -14,7 +15,7 @@ export function usePhysics(character: Character) {
       speedMultiplier: number,
       accelMultiplier: number,
       handleMultiplier: number,
-      delta: number
+      delta: number,
     ) => {
       const maxSpeed = 20 * speedMultiplier;
       const acceleration = 15 * accelMultiplier;
@@ -27,10 +28,16 @@ export function usePhysics(character: Character) {
       // Calculate current speed
       const currentSpeed = Math.sqrt(newVelX ** 2 + newVelZ ** 2);
 
-      // Apply throttle
+      // Determine the angle to use for acceleration
+      let angle = currentAngle;
+      if (currentSpeed > 0.1) {
+        // Use velocity direction when moving
+        angle = Math.atan2(newVelX, newVelZ);
+      }
+
+      // Apply throttle - accelerate in the direction the kart is facing
       if (throttle > 0) {
         const accel = acceleration * throttle * delta * (1 + driftBoost);
-        const angle = Math.atan2(newVelX, newVelZ);
         newVelX += Math.sin(angle) * accel;
         newVelZ += Math.cos(angle) * accel;
       }
@@ -44,11 +51,17 @@ export function usePhysics(character: Character) {
       // Apply steering
       if (steer !== 0 && currentSpeed > 0.1) {
         const turnAmount = steer * turnSpeed * delta * (isDrifting ? 1.5 : 1);
-        const angle = Math.atan2(newVelX, newVelZ);
-        const newAngle = angle + turnAmount;
+        angle += turnAmount;
         const speed = currentSpeed;
-        newVelX = Math.sin(newAngle) * speed;
-        newVelZ = Math.cos(newAngle) * speed;
+        newVelX = Math.sin(angle) * speed;
+        newVelZ = Math.cos(angle) * speed;
+      }
+
+      // Update current angle for next frame
+      if (currentSpeed > 0.1) {
+        setCurrentAngle(Math.atan2(newVelX, newVelZ));
+      } else {
+        setCurrentAngle(angle);
       }
 
       // Apply friction
@@ -66,7 +79,7 @@ export function usePhysics(character: Character) {
       setVelocity(newVelocity);
       return newVelocity;
     },
-    [velocity]
+    [velocity, currentAngle],
   );
 
   return { velocity, updatePhysics };

@@ -1,4 +1,4 @@
-import { useGetTrackLeaderboard } from './useQueries';
+import { useGetTrackLeaderboard } from "./useQueries";
 
 export function useLeaderboard(track: string) {
   const { data, isLoading, error } = useGetTrackLeaderboard(track);

@@ -1,10 +1,12 @@
-import { useState, useCallback } from 'react';
-import { useRaceState } from './useRaceState';
+import { useCallback, useState } from "react";
+import { useRaceState } from "./useRaceState";
 
 export function useLapTracking() {
   const { incrementLap } = useRaceState();
   const [lastCheckpoint, setLastCheckpoint] = useState(0);
-  const [checkpointsPassed, setCheckpointsPassed] = useState<Set<number>>(new Set());
+  const [checkpointsPassed, setCheckpointsPassed] = useState<Set<number>>(
+    new Set(),
+  );
 
   const checkLapProgress = useCallback(
     (position: [number, number, number]) => {
@@ -26,7 +28,7 @@ export function useLapTracking() {
         }
       }
     },
-    [lastCheckpoint, checkpointsPassed, incrementLap]
+    [lastCheckpoint, checkpointsPassed, incrementLap],
   );
 
   return { checkLapProgress };

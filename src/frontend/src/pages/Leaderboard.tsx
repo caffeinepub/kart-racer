@@ -1,15 +1,22 @@
-import { useLeaderboard } from '../hooks/useLeaderboard';
-import GameLogo from '../components/GameLogo';
-import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Trophy, Medal, Award } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Award, Medal, Trophy } from "lucide-react";
+import GameLogo from "../components/GameLogo";
+import { useLeaderboard } from "../hooks/useLeaderboard";
 
 interface LeaderboardProps {
   onBackToSelect: () => void;
 }
 
 export default function Leaderboard({ onBackToSelect }: LeaderboardProps) {
-  const { leaderboard, isLoading } = useLeaderboard('Rainbow Circuit');
+  const { leaderboard, isLoading } = useLeaderboard("Rainbow Circuit");
 
   const formatTime = (time: bigint) => {
     const ms = Number(time);
@@ -17,14 +24,14 @@ export default function Leaderboard({ onBackToSelect }: LeaderboardProps) {
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
     const milliseconds = Math.floor((ms % 1000) / 10);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(2, '0')}`;
+    return `${minutes}:${seconds.toString().padStart(2, "0")}.${milliseconds.toString().padStart(2, "0")}`;
   };
 
-  const getRankIcon = (index: number) => {
-    if (index === 0) return <Trophy className="w-6 h-6 text-boost-yellow" />;
-    if (index === 1) return <Medal className="w-6 h-6 text-gray-400" />;
-    if (index === 2) return <Award className="w-6 h-6 text-orange-600" />;
-    return <span className="text-lg font-bold">{index + 1}</span>;
+  const getRankIcon = (rank: number) => {
+    if (rank === 0) return <Trophy className="w-6 h-6 text-boost-yellow" />;
+    if (rank === 1) return <Medal className="w-6 h-6 text-gray-400" />;
+    if (rank === 2) return <Award className="w-6 h-6 text-orange-600" />;
+    return <span className="text-lg font-bold">{rank + 1}</span>;
   };
 
   return (
@@ -32,16 +39,24 @@ export default function Leaderboard({ onBackToSelect }: LeaderboardProps) {
       <GameLogo />
 
       <div className="bg-white/95 backdrop-blur rounded-3xl shadow-2xl p-8 max-w-4xl w-full">
-        <h1 className="text-5xl font-bold text-racing-blue text-center mb-8">Leaderboard</h1>
-        <h2 className="text-2xl font-semibold text-center mb-6 text-muted-foreground">Rainbow Circuit</h2>
+        <h1 className="text-5xl font-bold text-racing-blue text-center mb-8">
+          Leaderboard
+        </h1>
+        <h2 className="text-2xl font-semibold text-center mb-6 text-muted-foreground">
+          Rainbow Circuit
+        </h2>
 
         {isLoading ? (
           <div className="text-center py-12">
-            <div className="text-xl text-muted-foreground">Loading leaderboard...</div>
+            <div className="text-xl text-muted-foreground">
+              Loading leaderboard...
+            </div>
           </div>
         ) : leaderboard.length === 0 ? (
           <div className="text-center py-12">
-            <div className="text-xl text-muted-foreground">No times recorded yet. Be the first!</div>
+            <div className="text-xl text-muted-foreground">
+              No times recorded yet. Be the first!
+            </div>
           </div>
         ) : (
           <Table>
@@ -53,11 +68,20 @@ export default function Leaderboard({ onBackToSelect }: LeaderboardProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {leaderboard.map(([username, time], index) => (
-                <TableRow key={`${username}-${index}`} className={index < 3 ? 'bg-boost-yellow/10' : ''}>
-                  <TableCell className="text-center">{getRankIcon(index)}</TableCell>
-                  <TableCell className="font-semibold text-lg">{username}</TableCell>
-                  <TableCell className="text-right font-mono font-bold text-lg">{formatTime(time)}</TableCell>
+              {leaderboard.map(([username, time], rank) => (
+                <TableRow
+                  key={`${username}-${Number(time)}`}
+                  className={rank < 3 ? "bg-boost-yellow/10" : ""}
+                >
+                  <TableCell className="text-center">
+                    {getRankIcon(rank)}
+                  </TableCell>
+                  <TableCell className="font-semibold text-lg">
+                    {username}
+                  </TableCell>
+                  <TableCell className="text-right font-mono font-bold text-lg">
+                    {formatTime(time)}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -75,11 +99,9 @@ export default function Leaderboard({ onBackToSelect }: LeaderboardProps) {
       </div>
 
       <footer className="mt-8 text-white/80 text-sm text-center">
-        © {new Date().getFullYear()} Built with ❤️ using{' '}
+        © {new Date().getFullYear()} Built with ❤️ using{" "}
         <a
-          href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(
-            window.location.hostname
-          )}`}
+          href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
           target="_blank"
           rel="noopener noreferrer"
           className="underline hover:text-white"

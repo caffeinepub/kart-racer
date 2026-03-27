@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from "react";
 
 export function useDrifting(driftKey: boolean, steer: number) {
   const [isDrifting, setIsDrifting] = useState(false);

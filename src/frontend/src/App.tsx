@@ -1,50 +1,51 @@
-import { useState } from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import CharacterSelection from './pages/CharacterSelection';
-import RaceGame from './pages/RaceGame';
-import RaceResults from './pages/RaceResults';
-import Leaderboard from './pages/Leaderboard';
-import Layout from './components/Layout';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useState } from "react";
+import Layout from "./components/Layout";
+import CharacterSelection from "./pages/CharacterSelection";
+import Leaderboard from "./pages/Leaderboard";
+import RaceGame from "./pages/RaceGame";
+import RaceResults from "./pages/RaceResults";
 
-type GameScreen = 'character-select' | 'race' | 'results' | 'leaderboard';
+type GameScreen = "character-select" | "race" | "results" | "leaderboard";
 
 function App() {
-  const [currentScreen, setCurrentScreen] = useState<GameScreen>('character-select');
-  const [selectedCharacter, setSelectedCharacter] = useState<string>('');
+  const [currentScreen, setCurrentScreen] =
+    useState<GameScreen>("character-select");
+  const [selectedCharacter, setSelectedCharacter] = useState<string>("");
   const [raceTime, setRaceTime] = useState<number>(0);
 
   const handleCharacterSelect = (characterId: string) => {
     setSelectedCharacter(characterId);
-    setCurrentScreen('race');
+    setCurrentScreen("race");
   };
 
   const handleRaceComplete = (completionTime: number) => {
     setRaceTime(completionTime);
-    setCurrentScreen('results');
+    setCurrentScreen("results");
   };
 
   const handleBackToSelect = () => {
-    setCurrentScreen('character-select');
-    setSelectedCharacter('');
+    setCurrentScreen("character-select");
+    setSelectedCharacter("");
   };
 
   const handleViewLeaderboard = () => {
-    setCurrentScreen('leaderboard');
+    setCurrentScreen("leaderboard");
   };
 
   return (
     <Layout>
-      {currentScreen === 'character-select' && (
+      {currentScreen === "character-select" && (
         <CharacterSelection onSelectCharacter={handleCharacterSelect} />
       )}
-      {currentScreen === 'race' && (
+      {currentScreen === "race" && (
         <RaceGame
           characterId={selectedCharacter}
           onRaceComplete={handleRaceComplete}
           onBackToSelect={handleBackToSelect}
         />
       )}
-      {currentScreen === 'results' && (
+      {currentScreen === "results" && (
         <RaceResults
           characterId={selectedCharacter}
           completionTime={raceTime}
@@ -52,7 +53,7 @@ function App() {
           onViewLeaderboard={handleViewLeaderboard}
         />
       )}
-      {currentScreen === 'leaderboard' && (
+      {currentScreen === "leaderboard" && (
         <Leaderboard onBackToSelect={handleBackToSelect} />
       )}
     </Layout>

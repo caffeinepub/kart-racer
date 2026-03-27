@@ -1,15 +1,17 @@
-import { useState } from 'react';
-import { characters } from '../data/characters';
-import CharacterCard from '../components/CharacterCard';
-import GameLogo from '../components/GameLogo';
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import CharacterCard from "../components/CharacterCard";
+import GameLogo from "../components/GameLogo";
+import { characters } from "../data/characters";
 
 interface CharacterSelectionProps {
   onSelectCharacter: (characterId: string) => void;
 }
 
-export default function CharacterSelection({ onSelectCharacter }: CharacterSelectionProps) {
-  const [selectedId, setSelectedId] = useState<string>('');
+export default function CharacterSelection({
+  onSelectCharacter,
+}: CharacterSelectionProps) {
+  const [selectedId, setSelectedId] = useState<string>("");
 
   const handleSelect = (id: string) => {
     setSelectedId(id);

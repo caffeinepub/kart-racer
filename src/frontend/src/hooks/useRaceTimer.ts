@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from "react";
 
 export function useRaceTimer(isRunning: boolean) {
   const [elapsedTime, setElapsedTime] = useState(0);
@@ -25,7 +25,7 @@ export function useRaceTimer(isRunning: boolean) {
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
     const milliseconds = Math.floor((ms % 1000) / 10);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(2, '0')}`;
+    return `${minutes}:${seconds.toString().padStart(2, "0")}.${milliseconds.toString().padStart(2, "0")}`;
   };
 
   return { elapsedTime, formattedTime: formatTime(elapsedTime) };
