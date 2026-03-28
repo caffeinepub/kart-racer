@@ -1,4 +1,27 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+interface MobileInput {
+  throttle: number;
+  brake: number;
+  steer: number;
+  drift: boolean;
+  useItem: boolean;
+}
+
+const DEFAULT_MOBILE: MobileInput = {
+  throttle: 0,
+  brake: 0,
+  steer: 0,
+  drift: false,
+  useItem: false,
+};
+
+// Module-level ref so MobileControls can push into PlayerKart's hook
+let _setMobileInput: ((input: MobileInput) => void) | null = null;
+
+export function setMobileInput(input: MobileInput) {
+  if (_setMobileInput) _setMobileInput(input);
+}
 
 export function useKartControls(enabled: boolean) {
   const [keys, setKeys] = useState({
@@ -8,6 +31,18 @@ export function useKartControls(enabled: boolean) {
     right: false,
     drift: false,
   });
+
+  const [mobileInput, setMobile] = useState<MobileInput>(DEFAULT_MOBILE);
+  const mobileRef = useRef(mobileInput);
+  mobileRef.current = mobileInput;
+
+  // Register setter so external code can push mobile input
+  useEffect(() => {
+    _setMobileInput = setMobile;
+    return () => {
+      _setMobileInput = null;
+    };
+  }, []);
 
   useEffect(() => {
     if (!enabled) return;
@@ -30,7 +65,8 @@ export function useKartControls(enabled: boolean) {
         case "arrowright":
           setKeys((prev) => ({ ...prev, right: true }));
           break;
-        case " ":
+        case "shift":
+        case "z":
           setKeys((prev) => ({ ...prev, drift: true }));
           e.preventDefault();
           break;
@@ -55,7 +91,8 @@ export function useKartControls(enabled: boolean) {
         case "arrowright":
           setKeys((prev) => ({ ...prev, right: false }));
           break;
-        case " ":
+        case "shift":
+        case "z":
           setKeys((prev) => ({ ...prev, drift: false }));
           break;
       }
@@ -70,10 +107,12 @@ export function useKartControls(enabled: boolean) {
     };
   }, [enabled]);
 
-  return {
-    throttle: keys.forward ? 1 : 0,
-    brake: keys.backward ? 1 : 0,
-    steer: keys.left ? -1 : keys.right ? 1 : 0,
-    drift: keys.drift,
-  };
+  // Merge keyboard + mobile
+  const throttle = keys.forward ? 1 : mobileInput.throttle;
+  const brake = keys.backward ? 1 : mobileInput.brake;
+  const steer = keys.left ? -1 : keys.right ? 1 : mobileInput.steer;
+  const drift = keys.drift || mobileInput.drift;
+  const useItem = mobileInput.useItem;
+
+  return { throttle, brake, steer, drift, useItem };
 }

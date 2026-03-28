@@ -17,10 +17,10 @@ export function usePhysics(_character: Character) {
       handleMultiplier: number,
       delta: number,
     ) => {
-      const maxSpeed = 20 * speedMultiplier;
+      const maxSpeed = 25 * speedMultiplier;
       const acceleration = 15 * accelMultiplier;
-      const friction = 0.95;
-      const turnSpeed = 2 * handleMultiplier;
+      const friction = 0.99;
+      const turnSpeed = 2.2 * handleMultiplier;
 
       let newVelX = velocity.x;
       let newVelZ = velocity.z;
@@ -48,9 +48,9 @@ export function usePhysics(_character: Character) {
         newVelZ *= 0.9;
       }
 
-      // Apply steering
+      // Apply steering — negated so right key turns right on screen
       if (steer !== 0 && currentSpeed > 0.1) {
-        const turnAmount = steer * turnSpeed * delta * (isDrifting ? 1.5 : 1);
+        const turnAmount = -steer * turnSpeed * delta * (isDrifting ? 1.5 : 1);
         angle += turnAmount;
         const speed = currentSpeed;
         newVelX = Math.sin(angle) * speed;

@@ -53,6 +53,9 @@ export default function RaceHUD({
         .join(" ")
     : null;
 
+  // Convert to km/h-like values (0–360 range)
+  const speedKmh = Math.round(currentSpeed * 18);
+
   return (
     <div className="absolute top-0 left-0 right-0 bottom-0 z-10 pointer-events-none">
       {/* Top row */}
@@ -88,16 +91,15 @@ export default function RaceHUD({
         </div>
       </div>
 
-      {/* Bottom left — Speed */}
-      <div className="absolute bottom-4 left-4 bg-boost-yellow/90 backdrop-blur text-racing-blue px-6 py-3 rounded-2xl shadow-2xl">
+      {/* Bottom left — Speed (pushed up on mobile to avoid controls overlap) */}
+      <div className="absolute bottom-48 md:bottom-4 left-4 bg-boost-yellow/90 backdrop-blur text-racing-blue px-6 py-3 rounded-2xl shadow-2xl">
         <div className="text-sm font-semibold">SPEED</div>
-        <div className="text-3xl font-bold">
-          {Math.round(currentSpeed * 100)}
-        </div>
+        <div className="text-3xl font-bold">{speedKmh}</div>
+        <div className="text-xs opacity-60">km/h</div>
       </div>
 
-      {/* Bottom center — Item slot */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
+      {/* Bottom center — Item slot (pushed up on mobile) */}
+      <div className="absolute bottom-48 md:bottom-4 left-1/2 -translate-x-1/2">
         <div
           data-ocid="hud.item.panel"
           className={`px-6 py-3 rounded-2xl shadow-2xl backdrop-blur text-center min-w-[140px] ${
@@ -113,8 +115,8 @@ export default function RaceHUD({
         </div>
       </div>
 
-      {/* Bottom right — Active effect */}
-      <div className="absolute bottom-4 right-4 flex flex-col gap-2 items-end">
+      {/* Bottom right — Active effect (pushed up on mobile) */}
+      <div className="absolute bottom-48 md:bottom-4 right-4 flex flex-col gap-2 items-end">
         {activeEffect === "speed-boost" && (
           <div
             data-ocid="hud.boost.panel"
@@ -135,6 +137,15 @@ export default function RaceHUD({
             🛡 SHIELD
           </div>
         )}
+      </div>
+
+      {/* Desktop keyboard hint */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 hidden md:flex gap-4 text-white/50 text-xs">
+        <span>WASD / Arrows: Steer</span>
+        <span>·</span>
+        <span>Z / Shift: Drift</span>
+        <span>·</span>
+        <span>Space / X: Use Item</span>
       </div>
     </div>
   );

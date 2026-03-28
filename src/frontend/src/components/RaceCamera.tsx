@@ -16,9 +16,8 @@ export default function RaceCamera({
   const targetLookAt = useRef(new THREE.Vector3());
 
   useFrame(() => {
-    // Calculate camera position behind the kart
-    // Offset is now negative Z to be behind when kart faces forward (negative Z)
-    const offset = new THREE.Vector3(0, 4, 8);
+    // Kart faces +Z (front bumper at z=1.1), so camera goes behind at -Z
+    const offset = new THREE.Vector3(0, 4, -8);
     offset.applyAxisAngle(new THREE.Vector3(0, 1, 0), kartRotation[1]);
 
     targetPosition.current.set(
@@ -30,11 +29,13 @@ export default function RaceCamera({
     // Smooth camera movement
     camera.position.lerp(targetPosition.current, 0.1);
 
-    // Look at kart position slightly ahead
+    // Look ahead of the kart (in the +Z forward direction)
+    const lookAheadOffset = new THREE.Vector3(0, 1, 4);
+    lookAheadOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), kartRotation[1]);
     targetLookAt.current.set(
-      kartPosition[0],
-      kartPosition[1] + 1,
-      kartPosition[2],
+      kartPosition[0] + lookAheadOffset.x,
+      kartPosition[1] + lookAheadOffset.y,
+      kartPosition[2] + lookAheadOffset.z,
     );
     camera.lookAt(targetLookAt.current);
   });

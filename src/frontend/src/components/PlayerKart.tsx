@@ -78,14 +78,7 @@ export default function PlayerKart({
       meshRef.current.position.z + newVelocity.z * delta * speedMultiplier,
     ];
 
-    const distFromCenter = Math.sqrt(newPos[0] ** 2 + (newPos[2] + 10) ** 2);
-    if (distFromCenter > 15 || distFromCenter < 5) {
-      const angle = Math.atan2(newPos[2] + 10, newPos[0]);
-      const targetDist = distFromCenter > 15 ? 14.5 : 5.5;
-      newPos[0] = Math.cos(angle) * targetDist;
-      newPos[2] = Math.sin(angle) * targetDist - 10;
-    }
-
+    // No circular boundary - free movement on the track
     meshRef.current.position.set(...newPos);
     onPositionChange(newPos);
 

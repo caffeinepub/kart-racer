@@ -1,3 +1,7 @@
+import { useFrame } from "@react-three/fiber";
+import { useRef } from "react";
+import type * as THREE from "three";
+
 const WHEEL_POSITIONS: [number, number, number][] = [
   [-0.6, -0.3, 0.7],
   [0.6, -0.3, 0.7],
@@ -11,9 +15,23 @@ interface NPCKartProps {
   color: string;
   position: [number, number, number];
   rotation: number;
+  stunned?: boolean;
 }
 
-export default function NPCKart({ color, position, rotation }: NPCKartProps) {
+export default function NPCKart({
+  color,
+  position,
+  rotation,
+  stunned,
+}: NPCKartProps) {
+  const stunRingRef = useRef<THREE.Mesh>(null!);
+
+  useFrame((_, delta) => {
+    if (stunned && stunRingRef.current) {
+      stunRingRef.current.rotation.y += delta * 8;
+    }
+  });
+
   return (
     <group position={position} rotation={[0, rotation, 0]}>
       {/* Body */}
@@ -56,6 +74,19 @@ export default function NPCKart({ color, position, rotation }: NPCKartProps) {
           emissiveIntensity={0.2}
         />
       </mesh>
+
+      {/* Stun ring */}
+      {stunned && (
+        <mesh ref={stunRingRef} position={[0, 1.2, 0]}>
+          <torusGeometry args={[1.0, 0.12, 8, 24]} />
+          <meshStandardMaterial
+            color="#ffff00"
+            emissive="#ffdd00"
+            emissiveIntensity={3}
+            toneMapped={false}
+          />
+        </mesh>
+      )}
     </group>
   );
 }

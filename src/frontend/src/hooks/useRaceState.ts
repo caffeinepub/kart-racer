@@ -11,10 +11,11 @@ export function useRaceState() {
 
   const startCountdown = useCallback(() => {
     setRaceStatus("countdown");
+    // 4 seconds total: 3->2->1->GO at 1s intervals, then 1s for GO display
     setTimeout(() => {
       setRaceStatus("racing");
       setStartTime(Date.now());
-    }, 3000);
+    }, 4000);
   }, []);
 
   const incrementLap = useCallback(() => {

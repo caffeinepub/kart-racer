@@ -9,6 +9,12 @@ interface ActivePowerUpState {
   rocketActive: boolean;
 }
 
+// Module-level trigger so MobileControls can fire item use
+let _activateItem: (() => void) | null = null;
+export function triggerMobileItemUse() {
+  if (_activateItem) _activateItem();
+}
+
 export function useActivePowerUp() {
   const [state, setState] = useState<ActivePowerUpState>({
     heldItem: null,
@@ -53,9 +59,17 @@ export function useActivePowerUp() {
     setState((prev) => ({ ...prev, heldItem: null }));
   }, []);
 
+  // Register for mobile trigger
+  useEffect(() => {
+    _activateItem = activateItem;
+    return () => {
+      _activateItem = null;
+    };
+  }, [activateItem]);
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.code === "Space" || e.code === "KeyZ") {
+      if (e.code === "Space" || e.code === "KeyX") {
         e.preventDefault();
         activateItem();
       }

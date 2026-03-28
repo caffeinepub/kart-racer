@@ -1,42 +1,41 @@
 # Kart Racer
 
 ## Current State
-- 3D kart racing game built with React Three Fiber + Three.js
-- 10 playable characters with unique speed/accel/handling stats
-- Single oval ring track with barriers, trees, grandstands
-- Player kart with physics, steering, drift boost
-- Basic power-up items on track (3 positions) that collect but do nothing
-- Lap counter (3 laps), race timer, speed HUD
-- Race countdown, results screen, leaderboard (backend-connected)
-- No AI opponents, no position tracking, no functional power-up effects
+- Single winding track (12 waypoints) in RaceTrack.tsx / data/track.ts
+- 3 power-ups: speed boost (working), shield (working), rocket (rocketActive flag set but no visual/effect happens)
+- Character selection → race → results flow
+- AI opponents hardcoded to TRACK_WAYPOINTS from data/track.ts
+- RaceTrack renders fixed decorations for a single green environment
 
 ## Requested Changes (Diff)
 
 ### Add
-- **AI opponents** (3-4 NPC karts): Each NPC drives around the oval track autonomously using angle-based path following. They have their own position, speed, lap count. Displayed as colored karts in the scene.
-- **Race position tracker**: Calculate player's position (1st/2nd/3rd/4th) by comparing player lap+track angle progress vs NPC progress. Show "POS: 1st" in HUD.
-- **Functional power-ups**: Speed Boost = 3-second speed multiplier on the player. Shield = absorb one hit (visual ring around kart). Rocket = launches a projectile forward that temporarily slows the first NPC it hits.
-- **Item boxes**: Replace the 3 plain PowerUpItem positions with glowing rotating cube item boxes that respawn after pickup. Picking up awards a random power-up from the list.
-- **Drift/boost visual effects**: When drifting, emit small colored spark/smoke particles behind rear wheels. When speed boost active, add speed-line streaks as an overlay.
-- **Active item display**: Show the currently held item in HUD with an icon, and a "use item" button (Z key or tap button).
+- `data/maps.ts`: 4 themed maps each with id, name, description, waypoints, gridPositions, theme ('meadows'|'rainbow'|'castle'|'beach')
+  - Mushroom Meadows: existing green track with mushroom decorations
+  - Rainbow Road: sweeping space-style track, dark void bg, glowing rainbow road segments
+  - Bowser's Castle: tight turns, dark stone ground, lava pits, castle walls
+  - Koopa Beach: wide coastal curves, sandy ground, palm trees, blue ocean
+- `pages/MapSelection.tsx`: map picker with 4 themed cards, select button
+- Rocket visual: RocketProjectile component moves forward from kart, stuns nearest NPC within 5 units for 2s
+- NPC stun system in useAIOpponents: stunNPC(id) function, stunned NPC stops+spins for 2s
 
 ### Modify
-- **RaceHUD**: Add position display (1st/2nd/3rd/4th). Add held item slot with icon. Add item use button indicator.
-- **RaceGame**: Wire up NPC karts, position calculation, and power-up effect application.
-- **PlayerKart**: Apply speed boost multiplier from active power-up state. Show shield ring when shield active.
-- **PowerUpItem**: Upgrade to ItemBox component — rotating, glowing cube with respawn timer.
-- **CharacterCard**: Add stat bars (speed, acceleration, handling) as colored progress bars below the character name.
+- App.tsx: add selectedMap state and 'map-select' screen between character-select and race
+- CharacterSelection.tsx: navigate to map-select after picking character
+- RaceGame.tsx: accept mapId prop; pass waypoints to useAIOpponents; pass theme to RaceTrack; wire rocket stun
+- RaceTrack.tsx: accept theme prop; render per-theme ground color, road color, decorations; Rainbow Road uses emissive glowing cycling hue road
+- useAIOpponents.ts: accept waypoints param; add stun state
+- NPCKart.tsx: accept stunned prop and show spin visual
 
 ### Remove
-- Nothing removed
+- Nothing
 
 ## Implementation Plan
-1. Create `src/frontend/src/hooks/useAIOpponents.ts` — manages 3 NPC karts on a circular path, each with own angle/speed/lap state. Each NPC follows the oval at `angle += npcSpeed * delta`, position = `[cos(angle)*11.5, 0.5, sin(angle)*11.5 - 10]`.
-2. Create `src/frontend/src/components/NPCKart.tsx` — renders a simplified kart mesh (same structure as PlayerKart but no controls) with distinct color per NPC.
-3. Create `src/frontend/src/hooks/useRacePosition.ts` — computes player's 1-4 position by converting each racer's lap+angle to a single progress float and ranking them.
-4. Create `src/frontend/src/hooks/useActivePowerUp.ts` — manages held item, use action, effects (speedBoost, shield, rocket), and rocket projectile state.
-5. Update `PowerUpItem.tsx` → `ItemBox.tsx` — rotating glowing cube, respawn after 8s, awards random power-up on collect.
-6. Update `RaceHUD.tsx` — add position badge, item slot, item use prompt.
-7. Update `PlayerKart.tsx` — read speedBoost multiplier, render shield ring mesh when shield active.
-8. Update `RaceGame.tsx` — add NPCKart instances from hook state, add ItemBox positions, wire useActivePowerUp, useRacePosition.
-9. Update `CharacterCard.tsx` — add stat progress bars for speed/acceleration/handling.
+1. Create data/maps.ts with 4 map definitions and distinct waypoints
+2. Create pages/MapSelection.tsx with 4 visually distinct cards
+3. Update App.tsx flow: character-select → map-select → race
+4. Update RaceGame.tsx to accept mapId, look up map, thread to components
+5. Update RaceTrack.tsx for per-theme rendering
+6. Update useAIOpponents.ts with waypoints param and stun
+7. Add RocketProjectile component and wire rocket active state
+8. Update NPCKart to show stun visual
