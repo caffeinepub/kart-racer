@@ -1,4 +1,4 @@
-export type MapTheme = "meadows" | "rainbow" | "castle" | "beach";
+export type MapTheme = "city" | "highway" | "docks" | "mountain";
 
 export interface MapDef {
   id: string;
@@ -12,12 +12,12 @@ export interface MapDef {
 
 export const maps: MapDef[] = [
   {
-    id: "meadows",
-    name: "Mushroom Meadows",
+    id: "city",
+    name: "Downtown Neon",
     description:
-      "A cheerful green circuit with sweeping curves and mushroom decorations.",
-    emoji: "🍄",
-    theme: "meadows",
+      "Night city circuit through tight neon-lit streets and urban canyons.",
+    emoji: "🏙️",
+    theme: "city",
     waypoints: [
       [0, 15],
       [0, -10],
@@ -40,12 +40,12 @@ export const maps: MapDef[] = [
     ],
   },
   {
-    id: "rainbow",
-    name: "Rainbow Road",
+    id: "highway",
+    name: "Highway Havoc",
     description:
-      "A gravity-defying space track glowing with rainbow neon light.",
-    emoji: "🌈",
-    theme: "rainbow",
+      "Desert highway at night with long straights, sweeping curves, and no limits.",
+    emoji: "🛣️",
+    theme: "highway",
     waypoints: [
       [0, 20],
       [0, -15],
@@ -68,11 +68,12 @@ export const maps: MapDef[] = [
     ],
   },
   {
-    id: "castle",
-    name: "Bowser's Castle",
-    description: "Tight hairpins through a lava-lit fortress full of traps.",
-    emoji: "🏰",
-    theme: "castle",
+    id: "docks",
+    name: "Industrial Docks",
+    description:
+      "Dark port and warehouse district with tight hairpins and wet concrete.",
+    emoji: "🏭",
+    theme: "docks",
     waypoints: [
       [0, 10],
       [0, -5],
@@ -95,12 +96,12 @@ export const maps: MapDef[] = [
     ],
   },
   {
-    id: "beach",
-    name: "Koopa Beach",
+    id: "mountain",
+    name: "Mountain Pass",
     description:
-      "Wide coastal curves with sandy shores and crystal-blue waves.",
-    emoji: "🏖️",
-    theme: "beach",
+      "Winding alpine road at dusk with cliff edges and no guardrails.",
+    emoji: "⛰️",
+    theme: "mountain",
     waypoints: [
       [0, 25],
       [0, -5],

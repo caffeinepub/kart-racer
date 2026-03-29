@@ -9,28 +9,35 @@ interface MapSelectionProps {
 
 const THEME_STYLES: Record<
   string,
-  { bg: string; border: string; glow: string }
+  { borderColor: string; glowColor: string; accentColor: string }
 > = {
-  meadows: {
-    bg: "from-green-900 to-green-700",
-    border: "border-green-400",
-    glow: "shadow-green-500/50",
+  city: {
+    borderColor: "#00ccff",
+    glowColor: "rgba(0,200,255,0.4)",
+    accentColor: "#00ccff",
   },
-  rainbow: {
-    bg: "from-purple-900 to-indigo-800",
-    border: "border-purple-400",
-    glow: "shadow-purple-500/50",
+  highway: {
+    borderColor: "#ff8800",
+    glowColor: "rgba(255,136,0,0.4)",
+    accentColor: "#ff8800",
   },
-  castle: {
-    bg: "from-stone-900 to-red-950",
-    border: "border-orange-500",
-    glow: "shadow-orange-600/50",
+  docks: {
+    borderColor: "#ccff00",
+    glowColor: "rgba(180,255,0,0.35)",
+    accentColor: "#ccff00",
   },
-  beach: {
-    bg: "from-sky-900 to-cyan-800",
-    border: "border-cyan-400",
-    glow: "shadow-cyan-500/50",
+  mountain: {
+    borderColor: "#cc44ff",
+    glowColor: "rgba(180,60,255,0.4)",
+    accentColor: "#cc44ff",
   },
+};
+
+const THEME_BG: Record<string, string> = {
+  city: "linear-gradient(135deg, #050510 0%, #0a0a20 100%)",
+  highway: "linear-gradient(135deg, #100a00 0%, #1a1000 100%)",
+  docks: "linear-gradient(135deg, #020505 0%, #050a05 100%)",
+  mountain: "linear-gradient(135deg, #080010 0%, #100820 100%)",
 };
 
 export default function MapSelection({
@@ -42,33 +49,40 @@ export default function MapSelection({
   return (
     <div
       className="min-h-screen w-full flex flex-col items-center justify-center px-4 py-8"
-      style={{
-        background:
-          "linear-gradient(135deg, #0a0010 0%, #1a002a 50%, #050015 100%)",
-      }}
+      style={{ background: "#050505" }}
     >
       {/* Title */}
-      <div className="text-center mb-8">
+      <div className="text-center mb-10">
+        <p className="text-xs tracking-[0.4em] text-gray-500 uppercase mb-2">
+          Need for Speed
+        </p>
         <h1
-          className="text-5xl md:text-7xl font-black tracking-wider mb-2 uppercase"
+          className="text-5xl md:text-7xl font-black tracking-[0.1em] uppercase mb-3"
           style={{
-            fontFamily: "'Arial Black', sans-serif",
+            fontFamily: "'Bricolage Grotesque', system-ui, sans-serif",
             background:
-              "linear-gradient(90deg, #ff0080, #ff8800, #ffff00, #00ff80, #0080ff, #8000ff)",
+              "linear-gradient(90deg, #888 0%, #fff 30%, #aaa 50%, #fff 70%, #888 100%)",
+            backgroundSize: "200% auto",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
-            filter: "drop-shadow(0 0 20px rgba(255,100,255,0.5))",
+            backgroundClip: "text",
           }}
         >
-          Choose Your Track!
+          SELECT TRACK
         </h1>
-        <p className="text-gray-300 text-lg">
-          Pick a circuit and start your engine 🏁
-        </p>
+        <div
+          style={{
+            height: "2px",
+            background:
+              "linear-gradient(90deg, transparent, #ff8800, transparent)",
+            maxWidth: "300px",
+            margin: "0 auto",
+          }}
+        />
       </div>
 
       {/* Map Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-4xl mb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full max-w-4xl mb-10">
         {maps.map((map) => {
           const styles = THEME_STYLES[map.theme];
           const isSelected = selected === map.id;
@@ -78,26 +92,55 @@ export default function MapSelection({
               key={map.id}
               data-ocid={`mapselect.${map.id}.button`}
               onClick={() => setSelected(map.id)}
-              className={[
-                "relative rounded-2xl p-6 text-left cursor-pointer transition-all duration-200",
-                `bg-gradient-to-br ${styles.bg}`,
-                `border-2 ${isSelected ? styles.border : "border-transparent"}`,
-                isSelected
-                  ? `shadow-2xl ${styles.glow}`
-                  : "opacity-80 hover:opacity-100 hover:scale-[1.02]",
-                isSelected ? "scale-[1.04]" : "",
-              ].join(" ")}
+              className="relative text-left cursor-pointer transition-all duration-200 group"
+              style={{
+                background: isSelected ? THEME_BG[map.theme] : "#0d0d0d",
+                border: `1px solid ${isSelected ? styles.borderColor : "#222"}`,
+                boxShadow: isSelected
+                  ? `0 0 30px ${styles.glowColor}, inset 0 0 20px ${styles.glowColor}`
+                  : "none",
+                padding: "1.5rem",
+                transform: isSelected ? "scale(1.02)" : "scale(1)",
+              }}
             >
               {isSelected && (
-                <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-white flex items-center justify-center">
-                  <span className="text-black text-sm font-bold">✓</span>
+                <div
+                  className="absolute top-3 right-3 w-6 h-6 flex items-center justify-center"
+                  style={{
+                    background: styles.borderColor,
+                    color: "#000",
+                    fontSize: "12px",
+                    fontWeight: 900,
+                  }}
+                >
+                  ✓
                 </div>
               )}
-              <div className="text-5xl mb-3">{map.emoji}</div>
-              <h2 className="text-white text-2xl font-black tracking-wide mb-1">
+
+              {/* Accent line */}
+              <div
+                style={{
+                  width: "30px",
+                  height: "3px",
+                  background: styles.borderColor,
+                  marginBottom: "0.75rem",
+                  opacity: isSelected ? 1 : 0.4,
+                  boxShadow: isSelected
+                    ? `0 0 8px ${styles.glowColor}`
+                    : "none",
+                }}
+              />
+
+              <h2
+                className="text-xl font-black tracking-widest uppercase mb-1"
+                style={{
+                  color: isSelected ? styles.accentColor : "#ffffff",
+                  fontFamily: "'Bricolage Grotesque', system-ui, sans-serif",
+                }}
+              >
                 {map.name}
               </h2>
-              <p className="text-gray-300 text-sm leading-relaxed">
+              <p className="text-xs tracking-wide" style={{ color: "#666" }}>
                 {map.description}
               </p>
             </button>
@@ -111,25 +154,46 @@ export default function MapSelection({
           type="button"
           data-ocid="mapselect.back.button"
           onClick={onBack}
-          className="px-6 py-3 rounded-xl bg-white/10 text-white font-bold text-lg border border-white/20 hover:bg-white/20 transition-all"
+          className="px-6 py-3 font-bold text-sm tracking-widest uppercase transition-all"
+          style={{
+            background: "transparent",
+            border: "1px solid #333",
+            color: "#888",
+          }}
         >
-          ← Back
+          ← BACK
         </button>
         <button
           type="button"
           data-ocid="mapselect.start.button"
           onClick={() => selected && onSelectMap(selected)}
           disabled={!selected}
-          className={[
-            "px-10 py-4 rounded-xl font-black text-2xl uppercase tracking-widest transition-all duration-200",
-            selected
-              ? "bg-gradient-to-r from-yellow-400 to-orange-500 text-black shadow-2xl hover:scale-105 cursor-pointer"
-              : "bg-gray-700 text-gray-500 cursor-not-allowed",
-          ].join(" ")}
+          className="px-10 py-4 font-black text-sm tracking-[0.3em] uppercase transition-all duration-200"
+          style={{
+            background: selected ? "#ff8800" : "#1a1a1a",
+            color: selected ? "#000" : "#444",
+            border: selected ? "none" : "1px solid #333",
+            boxShadow: selected ? "0 0 30px rgba(255,136,0,0.5)" : "none",
+            cursor: selected ? "pointer" : "not-allowed",
+            transform: selected ? "scale(1.02)" : "scale(1)",
+          }}
         >
-          START RACE! 🏁
+          RACE NOW
         </button>
       </div>
+
+      {/* Footer */}
+      <p className="mt-8 text-xs text-gray-700">
+        © {new Date().getFullYear()}.{" "}
+        <a
+          href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
+          target="_blank"
+          rel="noreferrer"
+          className="hover:text-gray-500 transition-colors"
+        >
+          Built with love using caffeine.ai
+        </a>
+      </p>
     </div>
   );
 }

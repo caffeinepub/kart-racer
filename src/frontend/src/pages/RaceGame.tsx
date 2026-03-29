@@ -91,7 +91,6 @@ export default function RaceGame({
     receiveItem,
   } = useActivePowerUp();
 
-  // Show rocket projectile when rocketActive fires
   useEffect(() => {
     if (rocketActive) {
       setRocketVisible(true);
@@ -126,7 +125,6 @@ export default function RaceGame({
 
   const raceStarted = raceStatus === "racing";
 
-  // Power-up positions from map waypoints (every other waypoint, offset)
   const POWER_UP_POSITIONS: [number, number, number][] = map.waypoints
     .filter((_, i) => i % 2 === 0)
     .slice(0, 5)
@@ -135,20 +133,28 @@ export default function RaceGame({
   const npcPositions = npcs.map((n) => n.position);
 
   return (
-    <div className="w-full h-screen relative overflow-hidden">
+    <div className="w-full h-screen relative overflow-hidden bg-black">
       <Button
         onClick={onBackToSelect}
         variant="destructive"
         size="icon"
         data-ocid="race.back.button"
-        className="absolute top-4 right-4 z-50 rounded-full"
+        className="absolute top-4 right-4 z-50 rounded-none border border-red-800"
       >
         <X className="h-6 w-6" />
       </Button>
 
       {/* Map name badge */}
       <div className="absolute top-4 left-1/2 -translate-x-1/2 z-40 pointer-events-none">
-        <span className="px-4 py-1 rounded-full bg-black/60 text-white text-sm font-bold tracking-wide border border-white/20">
+        <span
+          className="px-4 py-1 text-xs font-bold tracking-widest uppercase"
+          style={{
+            background: "rgba(0,0,0,0.8)",
+            border: "1px solid rgba(255,140,0,0.5)",
+            color: "#ff8800",
+            letterSpacing: "0.2em",
+          }}
+        >
           {map.emoji} {map.name}
         </span>
       </div>
@@ -178,36 +184,88 @@ export default function RaceGame({
         }}
       >
         <Suspense fallback={null}>
-          {map.theme === "rainbow" ? (
+          {map.theme === "city" ? (
             <>
-              <ambientLight intensity={0.3} />
+              <ambientLight intensity={0.15} />
               <pointLight
-                position={[40, 20, 0]}
-                intensity={2}
+                position={[10, 8, 0]}
+                intensity={4}
                 color="#aa00ff"
+                distance={40}
+                decay={2}
               />
               <pointLight
-                position={[-20, 20, -30]}
-                intensity={2}
-                color="#0044ff"
+                position={[-10, 8, 20]}
+                intensity={4}
+                color="#00ccff"
+                distance={40}
+                decay={2}
+              />
+              <pointLight
+                position={[30, 6, -20]}
+                intensity={3}
+                color="#ff6600"
+                distance={30}
+                decay={2}
+              />
+              <pointLight
+                position={[-20, 6, -10]}
+                intensity={3}
+                color="#ff0066"
+                distance={30}
+                decay={2}
               />
             </>
-          ) : map.theme === "castle" ? (
+          ) : map.theme === "highway" ? (
+            <>
+              <ambientLight intensity={0.1} />
+              <directionalLight
+                position={[-30, 20, 10]}
+                intensity={0.5}
+                color="#aabbff"
+                castShadow
+              />
+              <pointLight
+                position={[50, 3, 0]}
+                intensity={3}
+                color="#ff6600"
+                distance={60}
+                decay={2}
+              />
+              <hemisphereLight args={["#111133", "#1a1206", 0.3]} />
+            </>
+          ) : map.theme === "docks" ? (
+            <>
+              <ambientLight intensity={0.1} />
+              <pointLight
+                position={[20, 8, -10]}
+                intensity={5}
+                color="#ffcc44"
+                distance={40}
+                decay={2}
+              />
+              <pointLight
+                position={[-20, 6, 10]}
+                intensity={4}
+                color="#44ff88"
+                distance={35}
+                decay={2}
+              />
+              <pointLight
+                position={[0, 6, -30]}
+                intensity={3}
+                color="#ffaa00"
+                distance={30}
+                decay={2}
+              />
+            </>
+          ) : (
             <>
               <ambientLight intensity={0.2} />
               <directionalLight
                 position={[20, 30, 15]}
-                intensity={0.6}
-                castShadow
-              />
-              <hemisphereLight args={["#330000", "#111", 0.4]} />
-            </>
-          ) : map.theme === "beach" ? (
-            <>
-              <ambientLight intensity={0.5} />
-              <directionalLight
-                position={[20, 30, 15]}
-                intensity={1.4}
+                intensity={0.8}
+                color="#ffaa66"
                 castShadow
                 shadow-mapSize-width={2048}
                 shadow-mapSize-height={2048}
@@ -217,24 +275,7 @@ export default function RaceGame({
                 shadow-camera-top={100}
                 shadow-camera-bottom={-100}
               />
-              <hemisphereLight args={["#87CEEB", "#c8a96e", 0.7]} />
-            </>
-          ) : (
-            <>
-              <ambientLight intensity={0.4} />
-              <directionalLight
-                position={[20, 30, 15]}
-                intensity={1.2}
-                castShadow
-                shadow-mapSize-width={2048}
-                shadow-mapSize-height={2048}
-                shadow-camera-far={150}
-                shadow-camera-left={-80}
-                shadow-camera-right={80}
-                shadow-camera-top={80}
-                shadow-camera-bottom={-80}
-              />
-              <hemisphereLight args={["#87CEEB", "#5a8f5a", 0.6]} />
+              <hemisphereLight args={["#331a00", "#2a2520", 0.4]} />
             </>
           )}
 

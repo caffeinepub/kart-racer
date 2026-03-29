@@ -1,5 +1,4 @@
-import { useFrame } from "@react-three/fiber";
-import { type ReactElement, useMemo, useRef } from "react";
+import { type ReactElement, useMemo } from "react";
 import * as THREE from "three";
 import type { MapTheme } from "../data/maps";
 
@@ -54,28 +53,42 @@ export default function RaceTrack({ theme, waypoints }: RaceTrackProps) {
     });
   }, [waypoints]);
 
-  if (theme === "rainbow") {
-    return <RainbowTrack segments={segments} />;
-  }
-
   const groundColor =
-    theme === "castle" ? "#1a1515" : theme === "beach" ? "#c8a96e" : "#3a7d44";
+    theme === "city"
+      ? "#0a0a0a"
+      : theme === "highway"
+        ? "#1a1206"
+        : theme === "docks"
+          ? "#080808"
+          : "#2a2520";
+
   const roadColor =
-    theme === "castle" ? "#1c1c1c" : theme === "beach" ? "#888888" : "#2a2a2a";
+    theme === "city"
+      ? "#151515"
+      : theme === "highway"
+        ? "#1c1c1c"
+        : theme === "docks"
+          ? "#111111"
+          : "#1a1a1a";
+
+  const roadMetalness = theme === "docks" ? 0.4 : 0.1;
+  const roadRoughness = theme === "docks" ? 0.3 : 0.85;
 
   return (
     <group>
+      {/* Ground plane */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
-        <planeGeometry args={[300, 300]} />
+        <planeGeometry args={[400, 400]} />
         <meshStandardMaterial
           color={groundColor}
-          roughness={0.9}
+          roughness={0.95}
           metalness={0.0}
         />
       </mesh>
 
       {segments.map((seg) => (
         <group key={seg.key}>
+          {/* Road surface */}
           <mesh
             position={[seg.mx, 0.02, seg.mz]}
             rotation={[-Math.PI / 2, 0, seg.angle]}
@@ -84,10 +97,27 @@ export default function RaceTrack({ theme, waypoints }: RaceTrackProps) {
             <planeGeometry args={[TRACK_WIDTH, seg.length]} />
             <meshStandardMaterial
               color={roadColor}
-              roughness={0.85}
-              metalness={0.1}
+              roughness={roadRoughness}
+              metalness={roadMetalness}
             />
           </mesh>
+
+          {/* Center lane markings */}
+          <mesh
+            position={[seg.mx, 0.03, seg.mz]}
+            rotation={[-Math.PI / 2, 0, seg.angle]}
+          >
+            <planeGeometry args={[0.15, seg.length * 0.45]} />
+            <meshStandardMaterial
+              color="#ffffff"
+              emissive="#ffffff"
+              emissiveIntensity={0.4}
+              transparent
+              opacity={0.6}
+            />
+          </mesh>
+
+          {/* Start/finish line */}
           {seg.isStart && (
             <mesh
               position={[seg.mx, 0.04, seg.mz]}
@@ -100,140 +130,21 @@ export default function RaceTrack({ theme, waypoints }: RaceTrackProps) {
               </meshStandardMaterial>
             </mesh>
           )}
+
           <SegmentCurb seg={seg} side={-1} theme={theme} />
           <SegmentCurb seg={seg} side={1} theme={theme} />
         </group>
       ))}
 
-      {theme === "meadows" && <MeadowsDecorations />}
-      {theme === "castle" && <CastleDecorations segments={segments} />}
-      {theme === "beach" && <BeachDecorations />}
+      {theme === "city" && <CityDecorations segments={segments} />}
+      {theme === "highway" && <HighwayDecorations segments={segments} />}
+      {theme === "docks" && <DocksDecorations segments={segments} />}
+      {theme === "mountain" && <MountainDecorations segments={segments} />}
     </group>
   );
 }
 
-// ── Rainbow Road ──────────────────────────────────────────
-function RainbowTrack({ segments }: { segments: Segment[] }) {
-  const segRefs = useRef<(THREE.Mesh | null)[]>([]);
-  const hueRef = useRef(0);
-
-  useFrame((_, delta) => {
-    hueRef.current = (hueRef.current + delta * 40) % 360;
-    segRefs.current.forEach((mesh, i) => {
-      if (!mesh) return;
-      const mat = mesh.material as THREE.MeshStandardMaterial;
-      const hue = ((hueRef.current + i * 20) % 360) / 360;
-      const color = new THREE.Color().setHSL(hue, 1, 0.55);
-      mat.emissive.set(color);
-      mat.emissiveIntensity = 1.8;
-      mat.color.set(color);
-    });
-  });
-
-  return (
-    <group>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.5, 0]}>
-        <planeGeometry args={[500, 500]} />
-        <meshStandardMaterial color="#050510" roughness={1} metalness={0} />
-      </mesh>
-
-      {segments.map((seg, i) => (
-        <group key={seg.key}>
-          <mesh
-            ref={(el) => {
-              segRefs.current[i] = el;
-            }}
-            position={[seg.mx, 0.02, seg.mz]}
-            rotation={[-Math.PI / 2, 0, seg.angle]}
-          >
-            <planeGeometry args={[TRACK_WIDTH, seg.length]} />
-            <meshStandardMaterial
-              color="#8800ff"
-              emissive="#8800ff"
-              emissiveIntensity={1.8}
-              toneMapped={false}
-            />
-          </mesh>
-          {seg.isStart && (
-            <mesh
-              position={[seg.mx, 0.04, seg.mz]}
-              rotation={[-Math.PI / 2, 0, seg.angle]}
-            >
-              <planeGeometry args={[TRACK_WIDTH, 2]} />
-              <meshStandardMaterial emissive="#ffffff" emissiveIntensity={0.5}>
-                <primitive attach="map" object={checkerTex} />
-              </meshStandardMaterial>
-            </mesh>
-          )}
-        </group>
-      ))}
-
-      <StarField />
-
-      {([-40, 0, 40, 80, -20] as number[]).map((x, i) => (
-        <FloatingOrb key={`orb-${x}`} position={[x, 3, (i - 2) * 20]} />
-      ))}
-    </group>
-  );
-}
-
-function StarField() {
-  const stars = useMemo(() => {
-    const pts: [number, number, number][] = [];
-    for (let i = 0; i < 200; i++) {
-      pts.push([
-        (Math.random() - 0.5) * 300,
-        Math.random() * 6 + 0.5,
-        (Math.random() - 0.5) * 300,
-      ]);
-    }
-    return pts;
-  }, []);
-
-  return (
-    <>
-      {stars.map((pos) => (
-        <mesh
-          key={`star-${pos[0].toFixed(1)}-${pos[2].toFixed(1)}`}
-          position={pos}
-        >
-          <sphereGeometry args={[0.12, 6, 6]} />
-          <meshStandardMaterial
-            color="#ffffff"
-            emissive="#ffffff"
-            emissiveIntensity={2}
-            toneMapped={false}
-          />
-        </mesh>
-      ))}
-    </>
-  );
-}
-
-function FloatingOrb({ position }: { position: [number, number, number] }) {
-  const ref = useRef<THREE.Mesh>(null!);
-  const t = useRef(Math.random() * Math.PI * 2);
-  useFrame((_, delta) => {
-    t.current += delta;
-    if (ref.current) {
-      ref.current.position.y = position[1] + Math.sin(t.current) * 0.8;
-    }
-  });
-  return (
-    <mesh ref={ref} position={position}>
-      <sphereGeometry args={[0.8, 12, 12]} />
-      <meshStandardMaterial
-        color="#ff00ff"
-        emissive="#ff00ff"
-        emissiveIntensity={2.5}
-        toneMapped={false}
-      />
-      <pointLight color="#ff00ff" intensity={3} distance={12} decay={2} />
-    </mesh>
-  );
-}
-
-// ── Shared curb ──────────────────────────────────────────
+// ── Curbs ──────────────────────────────────────────────────
 function SegmentCurb({
   seg,
   side,
@@ -247,23 +158,30 @@ function SegmentCurb({
 
   const numStripes = Math.max(1, Math.floor(seg.length / 2));
   const stripes: ReactElement[] = [];
+
   for (let n = 0; n < numStripes; n++) {
     const t = (n + 0.5) / numStripes;
     const stripeX = cx + Math.sin(seg.angle) * (t - 0.5) * seg.length;
     const stripeZ = cz + Math.cos(seg.angle) * (t - 0.5) * seg.length;
-    const isRed = n % 2 === 0;
+    const isAlt = n % 2 === 0;
+
     const color1 =
-      theme === "castle"
-        ? "#551111"
-        : theme === "beach"
-          ? "#ffaa33"
-          : "#cc2222";
+      theme === "city"
+        ? "#00ccff"
+        : theme === "highway"
+          ? "#ff8800"
+          : theme === "docks"
+            ? "#ffcc00"
+            : "#cc2222";
     const color2 =
-      theme === "castle"
-        ? "#2a2a2a"
-        : theme === "beach"
-          ? "#fffaaa"
-          : "#eeeeee";
+      theme === "city"
+        ? "#003366"
+        : theme === "highway"
+          ? "#ffffff"
+          : theme === "docks"
+            ? "#111111"
+            : "#eeeeee";
+
     stripes.push(
       <mesh
         key={n}
@@ -272,276 +190,523 @@ function SegmentCurb({
         receiveShadow
       >
         <boxGeometry args={[0.6, 0.25, seg.length / numStripes - 0.05]} />
-        <meshStandardMaterial color={isRed ? color1 : color2} />
+        <meshStandardMaterial
+          color={isAlt ? color1 : color2}
+          emissive={isAlt && theme === "city" ? color1 : undefined}
+          emissiveIntensity={isAlt && theme === "city" ? 1.0 : 0}
+          toneMapped={false}
+        />
       </mesh>,
     );
   }
   return <>{stripes}</>;
 }
 
-// ── Meadows ──────────────────────────────────────────────
-function MeadowsDecorations() {
+// Building positions: [x, y, z, width, height]
+const BUILDING_POSITIONS: [number, number, number, number, number][] = [
+  [-25, 0, -20, 8, 30],
+  [70, 0, -20, 10, 40],
+  [70, 0, 25, 8, 25],
+  [-30, 0, 30, 7, 35],
+  [45, 0, 45, 6, 20],
+  [-20, 0, -15, 5, 18],
+  [30, 0, -40, 9, 28],
+];
+
+const WIN_FRACS = [0.3, 0.5, 0.7];
+const WIN_FRAC_KEYS = ["w30", "w50", "w70"];
+
+// ── City Decorations ──────────────────────────────────────
+function CityDecorations({ segments }: { segments: Segment[] }) {
   return (
     <group>
-      <Grandstand position={[-15, 0, 18]} color="#3366cc" />
-      <Grandstand position={[15, 0, 18]} color="#cc3333" />
-      <FlagPole position={[-7, 0, 14]} colorAlt={false} />
-      <FlagPole position={[7, 0, 14]} colorAlt />
-      <Mushroom position={[-12, 0, -35]} capColor="#ff3333" />
-      <Mushroom position={[12, 0, -35]} capColor="#ffdd00" />
-      <Mushroom position={[30, 0, -38]} capColor="#3399ff" />
-      <Mushroom position={[60, 0, -32]} capColor="#ff3333" />
-      <Tree position={[65, 0, 0]} />
-      <Tree position={[65, 0, 25]} />
-      <Tree position={[48, 0, 40]} />
-      <Tree position={[15, 0, 45]} />
-      <Tree position={[-10, 0, 42]} />
-      <Tree position={[-28, 0, 20]} />
-      <Grandstand position={[62, 0, -5]} color="#aa8800" />
+      {/* Skyscrapers with glowing windows */}
+      {BUILDING_POSITIONS.map(([x, , z, w, h]) => (
+        <group key={`bldg-${x}-${z}`} position={[x, 0, z]}>
+          <mesh castShadow position={[0, h / 2, 0]}>
+            <boxGeometry args={[w, h, w * 0.8]} />
+            <meshStandardMaterial
+              color="#0a0a0f"
+              metalness={0.3}
+              roughness={0.7}
+            />
+          </mesh>
+          {WIN_FRACS.map((frac, wi) => (
+            <mesh key={WIN_FRAC_KEYS[wi]} position={[0, h * frac, w * 0.41]}>
+              <boxGeometry args={[w * 0.7, h * 0.06, 0.05]} />
+              <meshStandardMaterial
+                color="#ffaa44"
+                emissive="#ff8800"
+                emissiveIntensity={wi % 2 === 0 ? 1.5 : 0.8}
+                toneMapped={false}
+              />
+            </mesh>
+          ))}
+        </group>
+      ))}
+
+      {/* Neon billboard signs along track */}
+      {segments
+        .filter((_, i) => i % 4 === 1)
+        .map((seg) => (
+          <NeonBillboard
+            key={seg.key}
+            x={seg.mx + Math.cos(seg.angle) * 8}
+            z={seg.mz - Math.sin(seg.angle) * 8}
+            angle={seg.angle}
+          />
+        ))}
+
+      {/* Streetlights */}
+      {segments
+        .filter((_, i) => i % 2 === 0)
+        .map((seg) => (
+          <group key={`light-${seg.key}`}>
+            <Streetlight
+              x={seg.mx + Math.cos(seg.angle) * 6}
+              z={seg.mz - Math.sin(seg.angle) * 6}
+            />
+            <Streetlight
+              x={seg.mx - Math.cos(seg.angle) * 6}
+              z={seg.mz + Math.sin(seg.angle) * 6}
+            />
+          </group>
+        ))}
     </group>
   );
 }
 
-function Mushroom({
-  position,
-  capColor,
-}: { position: [number, number, number]; capColor: string }) {
+function NeonBillboard({
+  x,
+  z,
+  angle,
+}: { x: number; z: number; angle: number }) {
+  const colors = ["#ff0066", "#00ffcc", "#ff6600", "#aa00ff"];
+  const color = colors[Math.floor(Math.abs(x + z) % colors.length)];
   return (
-    <group position={position}>
-      <mesh position={[0, 1, 0]} castShadow>
-        <cylinderGeometry args={[0.3, 0.4, 2, 8]} />
-        <meshStandardMaterial color="#c8a96e" roughness={0.9} />
+    <group position={[x, 0, z]} rotation={[0, angle, 0]}>
+      <mesh position={[0, 3, 0]}>
+        <cylinderGeometry args={[0.1, 0.1, 6, 6]} />
+        <meshStandardMaterial color="#333333" metalness={0.8} roughness={0.3} />
       </mesh>
-      <mesh position={[0, 2.5, 0]} castShadow>
-        <sphereGeometry args={[1.2, 12, 12]} />
-        <meshStandardMaterial color={capColor} roughness={0.7} />
+      <mesh position={[0, 6.5, 0]}>
+        <boxGeometry args={[4, 2, 0.15]} />
+        <meshStandardMaterial color="#0a0a0a" metalness={0.2} roughness={0.8} />
       </mesh>
-      {["dot0", "dot1", "dot2", "dot3"].map((dotKey, i) => {
-        const a = (i / 4) * Math.PI * 2;
-        return (
+      <mesh position={[0, 6.5, 0.1]}>
+        <boxGeometry args={[3.6, 1.6, 0.05]} />
+        <meshStandardMaterial
+          color={color}
+          emissive={color}
+          emissiveIntensity={3}
+          toneMapped={false}
+        />
+      </mesh>
+      <pointLight
+        position={[0, 6.5, 0.3]}
+        color={color}
+        intensity={4}
+        distance={15}
+        decay={2}
+      />
+    </group>
+  );
+}
+
+function Streetlight({ x, z }: { x: number; z: number }) {
+  return (
+    <group position={[x, 0, z]}>
+      <mesh position={[0, 3, 0]}>
+        <cylinderGeometry args={[0.08, 0.1, 6, 6]} />
+        <meshStandardMaterial color="#222222" metalness={0.8} roughness={0.3} />
+      </mesh>
+      <mesh position={[0.4, 6.1, 0]} rotation={[0, 0, -0.3]}>
+        <cylinderGeometry args={[0.05, 0.05, 0.9, 6]} />
+        <meshStandardMaterial color="#222222" metalness={0.8} roughness={0.3} />
+      </mesh>
+      <mesh position={[0.85, 6.2, 0]}>
+        <sphereGeometry args={[0.18, 8, 8]} />
+        <meshStandardMaterial
+          color="#ffeeaa"
+          emissive="#ff9900"
+          emissiveIntensity={3}
+          toneMapped={false}
+        />
+      </mesh>
+      <pointLight
+        position={[0.85, 6.2, 0]}
+        color="#ff8800"
+        intensity={5}
+        distance={20}
+        decay={2}
+      />
+    </group>
+  );
+}
+
+// ── Highway Decorations ───────────────────────────────────
+const ROCK_XS = [-60, -40, 80, 110, -15] as const;
+
+function HighwayDecorations({ segments }: { segments: Segment[] }) {
+  return (
+    <group>
+      {/* Desert rock formations */}
+      {ROCK_XS.map((x, i) => (
+        <group key={`rock-${x}`} position={[x, 0, (i - 2) * 20]}>
+          <mesh position={[0, 3, 0]} castShadow>
+            <boxGeometry args={[8, 6, 6]} />
+            <meshStandardMaterial
+              color="#3a2a18"
+              roughness={0.95}
+              metalness={0.0}
+            />
+          </mesh>
+          <mesh position={[3, 5, 2]} castShadow>
+            <boxGeometry args={[4, 3, 3]} />
+            <meshStandardMaterial
+              color="#2e2010"
+              roughness={0.95}
+              metalness={0.0}
+            />
+          </mesh>
+        </group>
+      ))}
+
+      {/* Guardrails */}
+      {segments
+        .filter((_, i) => i % 3 === 0)
+        .map((seg) => (
+          <group key={`rail-${seg.key}`}>
+            <GuardRail
+              x={seg.mx + Math.cos(seg.angle) * 5.5}
+              z={seg.mz - Math.sin(seg.angle) * 5.5}
+              angle={seg.angle}
+              length={seg.length}
+            />
+            <GuardRail
+              x={seg.mx - Math.cos(seg.angle) * 5.5}
+              z={seg.mz + Math.sin(seg.angle) * 5.5}
+              angle={seg.angle}
+              length={seg.length}
+            />
+          </group>
+        ))}
+
+      {/* Highway signs */}
+      {segments
+        .filter((_, i) => i % 4 === 2)
+        .map((seg) => (
+          <HighwaySign
+            key={`sign-${seg.key}`}
+            x={seg.mx + Math.cos(seg.angle) * 7}
+            z={seg.mz - Math.sin(seg.angle) * 7}
+            angle={seg.angle}
+          />
+        ))}
+
+      {/* Overpass pillars */}
+      {segments
+        .filter((_, i) => i % 5 === 0)
+        .map((seg) => (
           <mesh
-            key={dotKey}
-            position={[Math.cos(a) * 0.7, 2.6, Math.sin(a) * 0.7]}
+            key={`pillar-${seg.key}`}
+            position={[seg.mx, 3, seg.mz]}
             castShadow
           >
-            <sphereGeometry args={[0.2, 8, 8]} />
-            <meshStandardMaterial color="#ffffff" />
+            <boxGeometry args={[1.5, 6, 1.5]} />
+            <meshStandardMaterial
+              color="#888888"
+              roughness={0.8}
+              metalness={0.2}
+            />
           </mesh>
-        );
-      })}
+        ))}
     </group>
   );
 }
 
-function Tree({ position }: { position: [number, number, number] }) {
+function GuardRail({
+  x,
+  z,
+  angle,
+  length,
+}: { x: number; z: number; angle: number; length: number }) {
   return (
-    <group position={position}>
-      <mesh position={[0, 1.5, 0]} castShadow>
-        <cylinderGeometry args={[0.3, 0.4, 3, 8]} />
-        <meshStandardMaterial color="#654321" roughness={0.9} />
-      </mesh>
-      <mesh position={[0, 3.5, 0]} castShadow>
-        <coneGeometry args={[1.5, 3, 8]} />
-        <meshStandardMaterial color="#228B22" roughness={0.8} />
-      </mesh>
-      <mesh position={[0, 5, 0]} castShadow>
-        <coneGeometry args={[1.2, 2.5, 8]} />
-        <meshStandardMaterial color="#2a9d2a" roughness={0.8} />
-      </mesh>
-    </group>
+    <mesh position={[x, 0.5, z]} rotation={[0, angle, 0]}>
+      <boxGeometry args={[0.15, 0.6, length * 0.95]} />
+      <meshStandardMaterial color="#cccccc" metalness={0.85} roughness={0.2} />
+    </mesh>
   );
 }
 
-function Grandstand({
-  position,
-  color,
-}: { position: [number, number, number]; color: string }) {
+function HighwaySign({ x, z, angle }: { x: number; z: number; angle: number }) {
   return (
-    <group position={position}>
-      <mesh position={[0, 2, 0]} castShadow>
-        <boxGeometry args={[4, 4, 8]} />
-        <meshStandardMaterial color="#8B4513" metalness={0.1} roughness={0.8} />
+    <group position={[x, 0, z]} rotation={[0, angle, 0]}>
+      <mesh position={[0, 3, 0]}>
+        <cylinderGeometry args={[0.1, 0.1, 6, 6]} />
+        <meshStandardMaterial color="#888888" metalness={0.8} roughness={0.3} />
       </mesh>
-      <mesh position={[0, 4.5, 0]} castShadow>
-        <boxGeometry args={[4.5, 0.5, 8.5]} />
-        <meshStandardMaterial color={color} metalness={0.2} roughness={0.7} />
+      <mesh position={[0, 6.2, 0]}>
+        <boxGeometry args={[3, 1.2, 0.12]} />
+        <meshStandardMaterial color="#006600" roughness={0.7} metalness={0.1} />
       </mesh>
-    </group>
-  );
-}
-
-function FlagPole({
-  position,
-  colorAlt,
-}: { position: [number, number, number]; colorAlt: boolean }) {
-  return (
-    <group position={position}>
-      <mesh castShadow>
-        <cylinderGeometry args={[0.1, 0.1, 6, 8]} />
-        <meshStandardMaterial color="#cccccc" metalness={0.8} roughness={0.2} />
-      </mesh>
-      <mesh position={[0.5, 2.5, 0]} castShadow>
-        <boxGeometry args={[1, 0.6, 0.05]} />
+      <mesh position={[0, 6.2, 0.07]}>
+        <boxGeometry args={[2.6, 0.8, 0.05]} />
         <meshStandardMaterial
-          color={colorAlt ? "#ff3333" : "#3366ff"}
-          metalness={0.1}
-          roughness={0.7}
-          side={THREE.DoubleSide}
+          color="#ffffff"
+          emissive="#ffffff"
+          emissiveIntensity={0.5}
+          toneMapped={false}
         />
       </mesh>
     </group>
   );
 }
 
-// ── Castle ───────────────────────────────────────────────
-function CastleDecorations({ segments }: { segments: Segment[] }) {
-  const wallPositions = segments
-    .filter((_, i) => i % 3 === 0)
-    .map((seg) => ({ x: seg.mx, z: seg.mz, angle: seg.angle }));
+// ── Docks Decorations ─────────────────────────────────────
+const CONTAINER_POSITIONS: [number, number, number][] = [
+  [-40, 0, -20],
+  [-40, 0, 0],
+  [-40, 0, 20],
+  [60, 0, -30],
+  [60, 0, 10],
+];
 
+const BARREL_POSITIONS: [number, number, number][] = [
+  [-35, 0, -5],
+  [-35, 0, 5],
+  [55, 0, 25],
+  [55, 0, 30],
+];
+
+const DOCK_LIGHT_POSITIONS: [number, number, number][] = [
+  [-30, 4, -10],
+  [40, 4, 20],
+];
+
+const containerColors = ["#cc3300", "#006699", "#336600", "#663300", "#990099"];
+
+function DocksDecorations({ segments }: { segments: Segment[] }) {
   return (
     <group>
-      {(
-        [
-          [-15, -45],
-          [15, -20],
-          [-5, -10],
-        ] as [number, number][]
-      ).map(([x, z]) => (
-        <mesh
-          key={`lava-${x}-${z}`}
-          position={[x, 0.03, z]}
-          rotation={[-Math.PI / 2, 0, 0]}
-        >
-          <planeGeometry args={[6, 4]} />
+      {/* Dock water */}
+      <mesh position={[-60, 0.08, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[60, 200]} />
+        <meshStandardMaterial
+          color="#050a10"
+          roughness={0.05}
+          metalness={0.6}
+          transparent
+          opacity={0.9}
+        />
+      </mesh>
+
+      {/* Stacked shipping containers */}
+      {CONTAINER_POSITIONS.map(([x, , z], i) => (
+        <group key={`container-${x}-${z}`} position={[x, 0, z]}>
+          <mesh position={[0, 1.5, 0]} castShadow>
+            <boxGeometry args={[6, 3, 2.5]} />
+            <meshStandardMaterial
+              color={containerColors[i % containerColors.length]}
+              roughness={0.7}
+              metalness={0.3}
+            />
+          </mesh>
+          <mesh position={[0, 4.5, 0]} castShadow>
+            <boxGeometry args={[6, 3, 2.5]} />
+            <meshStandardMaterial
+              color={containerColors[(i + 2) % containerColors.length]}
+              roughness={0.7}
+              metalness={0.3}
+            />
+          </mesh>
+        </group>
+      ))}
+
+      {/* Industrial crane arm */}
+      <group position={[50, 0, -10]}>
+        <mesh position={[0, 8, 0]} castShadow>
+          <boxGeometry args={[1, 16, 1]} />
           <meshStandardMaterial
-            color="#ff4400"
-            emissive="#ff2200"
-            emissiveIntensity={1.5}
-            toneMapped={false}
+            color="#ffcc00"
+            metalness={0.6}
+            roughness={0.4}
+          />
+        </mesh>
+        <mesh position={[-6, 15, 0]} castShadow>
+          <boxGeometry args={[12, 1, 1]} />
+          <meshStandardMaterial
+            color="#ffcc00"
+            metalness={0.6}
+            roughness={0.4}
+          />
+        </mesh>
+        <pointLight
+          position={[0, 16, 0]}
+          color="#ffcc00"
+          intensity={8}
+          distance={30}
+          decay={2}
+        />
+      </group>
+
+      {/* Industrial barrels */}
+      {BARREL_POSITIONS.map(([x, , z], i) => (
+        <mesh key={`barrel-${x}-${z}`} position={[x, 0.9, z]} castShadow>
+          <cylinderGeometry args={[0.5, 0.5, 1.8, 8]} />
+          <meshStandardMaterial
+            color={i % 2 === 0 ? "#882200" : "#224400"}
+            roughness={0.7}
+            metalness={0.3}
           />
         </mesh>
       ))}
-      {(
-        [
-          [-12, -25],
-          [10, -30],
-          [-18, -5],
-        ] as [number, number][]
-      ).map(([x, z]) => (
+
+      {/* Warehouse walls */}
+      {segments
+        .filter((_, i) => i % 4 === 0)
+        .map((seg) => (
+          <mesh
+            key={`wall-${seg.key}`}
+            position={[
+              seg.mx + Math.cos(seg.angle) * 9,
+              3,
+              seg.mz - Math.sin(seg.angle) * 9,
+            ]}
+            rotation={[0, seg.angle, 0]}
+            castShadow
+          >
+            <boxGeometry args={[0.5, 6, seg.length * 0.8]} />
+            <meshStandardMaterial
+              color="#1a1a1a"
+              roughness={0.9}
+              metalness={0.1}
+            />
+          </mesh>
+        ))}
+
+      {/* Green dock lights */}
+      {DOCK_LIGHT_POSITIONS.map(([x, y, z]) => (
         <pointLight
-          key={`torch-${x}-${z}`}
-          position={[x, 3, z]}
-          color="#ff8800"
-          intensity={6}
-          distance={18}
+          key={`docklight-${x}-${z}`}
+          position={[x, y, z]}
+          color="#44ff88"
+          intensity={5}
+          distance={25}
           decay={2}
         />
       ))}
-      {wallPositions.map((wp) => (
-        <CastleWall
-          key={`wall-${wp.x.toFixed(1)}-${wp.z.toFixed(1)}`}
-          x={wp.x}
-          z={wp.z}
-          angle={wp.angle}
-        />
-      ))}
     </group>
   );
 }
 
-function CastleWall({ x, z, angle }: { x: number; z: number; angle: number }) {
-  const perpX = Math.cos(angle) * 7;
-  const perpZ = -Math.sin(angle) * 7;
-  return (
-    <group>
-      {([-1, 1] as const).map((side) => (
-        <mesh
-          key={`side-${side}`}
-          position={[x + perpX * side, 2.5, z + perpZ * side]}
-          rotation={[0, angle, 0]}
-          castShadow
-        >
-          <boxGeometry args={[1.5, 5, 4]} />
-          <meshStandardMaterial
-            color="#3a3030"
-            roughness={0.95}
-            metalness={0.05}
-          />
-        </mesh>
-      ))}
-    </group>
-  );
-}
+// ── Mountain Decorations ──────────────────────────────────
+const PINE_POSITIONS: [number, number, number][] = [
+  [-25, 0, 40],
+  [-30, 0, 15],
+  [-22, 0, -10],
+  [-28, 0, -25],
+  [90, 0, 40],
+  [92, 0, 15],
+  [88, 0, -15],
+  [85, 0, -30],
+  [55, 0, 55],
+  [22, 0, 55],
+  [-8, 0, 38],
+];
 
-// ── Beach ────────────────────────────────────────────────
-function BeachDecorations() {
+function MountainDecorations({ segments }: { segments: Segment[] }) {
   return (
     <group>
-      <mesh position={[-80, 0.15, 10]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[80, 200]} />
+      {/* Mountain backdrop */}
+      <mesh position={[35, 20, -80]} castShadow>
+        <boxGeometry args={[200, 40, 10]} />
         <meshStandardMaterial
-          color="#0077be"
-          roughness={0.1}
-          metalness={0.3}
-          transparent
-          opacity={0.85}
+          color="#1e1812"
+          roughness={0.95}
+          metalness={0.0}
         />
       </mesh>
-      <PalmTree position={[-35, 0, 35]} />
-      <PalmTree position={[-40, 0, 10]} />
-      <PalmTree position={[-30, 0, -10]} />
-      <PalmTree position={[60, 0, 50]} />
-      <PalmTree position={[85, 0, 15]} />
-      <BeachUmbrella position={[-28, 0, 25]} color="#ff3333" />
-      <BeachUmbrella position={[-32, 0, 0]} color="#3399ff" />
-      <BeachUmbrella position={[75, 0, 30]} color="#ffdd00" />
-    </group>
-  );
-}
-
-function PalmTree({ position }: { position: [number, number, number] }) {
-  return (
-    <group position={position}>
-      <mesh position={[0, 3, 0]} castShadow>
-        <cylinderGeometry args={[0.2, 0.35, 6, 8]} />
-        <meshStandardMaterial color="#c8a96e" roughness={0.9} />
+      <mesh position={[35, 30, -85]}>
+        <boxGeometry args={[120, 30, 8]} />
+        <meshStandardMaterial
+          color="#2a2218"
+          roughness={0.95}
+          metalness={0.0}
+        />
       </mesh>
-      {["leaf0", "leaf1", "leaf2", "leaf3", "leaf4"].map((leafKey, i) => {
-        const a = (i / 5) * Math.PI * 2;
-        return (
+
+      {/* Pine trees */}
+      {PINE_POSITIONS.map(([x, , z]) => (
+        <PineTree key={`pine-${x}-${z}`} position={[x, 0, z]} />
+      ))}
+
+      {/* Cliff face walls */}
+      {segments
+        .filter((_, i) => i % 3 === 0)
+        .map((seg) => (
           <mesh
-            key={leafKey}
-            position={[Math.cos(a) * 1.5, 6.2, Math.sin(a) * 1.5]}
-            rotation={[0.6, a, 0]}
+            key={`cliff-${seg.key}`}
+            position={[
+              seg.mx + Math.cos(seg.angle) * 8,
+              4,
+              seg.mz - Math.sin(seg.angle) * 8,
+            ]}
+            rotation={[0, seg.angle, 0]}
             castShadow
           >
-            <coneGeometry args={[0.3, 2.5, 6]} />
-            <meshStandardMaterial color="#22aa44" roughness={0.8} />
+            <boxGeometry args={[2, 8, seg.length * 0.9]} />
+            <meshStandardMaterial
+              color="#3a3028"
+              roughness={0.98}
+              metalness={0.0}
+            />
           </mesh>
-        );
-      })}
+        ))}
+
+      {/* Safety guardrails */}
+      {segments
+        .filter((_, i) => i % 2 === 0)
+        .map((seg) => (
+          <mesh
+            key={`grail-${seg.key}`}
+            position={[
+              seg.mx - Math.cos(seg.angle) * 5,
+              0.6,
+              seg.mz + Math.sin(seg.angle) * 5,
+            ]}
+            rotation={[0, seg.angle, 0]}
+          >
+            <boxGeometry args={[0.12, 0.8, seg.length * 0.9]} />
+            <meshStandardMaterial
+              color="#aaaaaa"
+              metalness={0.8}
+              roughness={0.3}
+            />
+          </mesh>
+        ))}
     </group>
   );
 }
 
-function BeachUmbrella({
-  position,
-  color,
-}: { position: [number, number, number]; color: string }) {
+function PineTree({ position }: { position: [number, number, number] }) {
   return (
     <group position={position}>
       <mesh position={[0, 1.5, 0]} castShadow>
-        <cylinderGeometry args={[0.05, 0.05, 3, 6]} />
-        <meshStandardMaterial color="#cccccc" />
+        <cylinderGeometry args={[0.25, 0.35, 3, 7]} />
+        <meshStandardMaterial color="#3d2b1a" roughness={0.95} />
       </mesh>
-      <mesh position={[0, 3.1, 0]} rotation={[-0.1, 0, 0]} castShadow>
-        <coneGeometry args={[1.5, 0.5, 12]} />
-        <meshStandardMaterial
-          color={color}
-          roughness={0.7}
-          side={THREE.DoubleSide}
-        />
+      <mesh position={[0, 4, 0]} castShadow>
+        <coneGeometry args={[1.6, 3.5, 7]} />
+        <meshStandardMaterial color="#1a3020" roughness={0.8} />
+      </mesh>
+      <mesh position={[0, 6, 0]} castShadow>
+        <coneGeometry args={[1.1, 2.8, 7]} />
+        <meshStandardMaterial color="#1e3822" roughness={0.8} />
+      </mesh>
+      <mesh position={[0, 7.5, 0]} castShadow>
+        <coneGeometry args={[0.7, 2.2, 7]} />
+        <meshStandardMaterial color="#223e26" roughness={0.8} />
       </mesh>
     </group>
   );

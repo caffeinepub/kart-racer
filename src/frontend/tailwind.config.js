@@ -57,19 +57,24 @@ export default {
                     5: 'oklch(var(--chart-5))'
                 },
                 sidebar: {
-                    DEFAULT: 'oklch(var(--sidebar))',
-                    foreground: 'oklch(var(--sidebar-foreground))',
-                    primary: 'oklch(var(--sidebar-primary))',
-                    'primary-foreground': 'oklch(var(--sidebar-primary-foreground))',
-                    accent: 'oklch(var(--sidebar-accent))',
-                    'accent-foreground': 'oklch(var(--sidebar-accent-foreground))',
-                    border: 'oklch(var(--sidebar-border))',
-                    ring: 'oklch(var(--sidebar-ring))'
+                    DEFAULT: 'oklch(var(--sidebar, 0.10 0 0))',
+                    foreground: 'oklch(var(--sidebar-foreground, 0.95 0 0))',
+                    primary: 'oklch(var(--sidebar-primary, 0.72 0.22 55))',
+                    'primary-foreground': 'oklch(var(--sidebar-primary-foreground, 0.07 0 0))',
+                    accent: 'oklch(var(--sidebar-accent, 0.14 0 0))',
+                    'accent-foreground': 'oklch(var(--sidebar-accent-foreground, 0.95 0 0))',
+                    border: 'oklch(var(--sidebar-border, 0.20 0 0))',
+                    ring: 'oklch(var(--sidebar-ring, 0.72 0.22 55))'
                 },
+                'nfs-cyan': 'oklch(var(--nfs-cyan))',
+                'nfs-orange': 'oklch(var(--nfs-orange))',
+                'nfs-purple': 'oklch(var(--nfs-purple))',
+                'nfs-yellow': 'oklch(var(--nfs-yellow))',
+                'nfs-red': 'oklch(var(--nfs-red))',
+                'boost-yellow': 'oklch(var(--boost-yellow))',
                 'racing-blue': 'oklch(var(--racing-blue))',
                 'racing-purple': 'oklch(var(--racing-purple))',
                 'racing-pink': 'oklch(var(--racing-pink))',
-                'boost-yellow': 'oklch(var(--boost-yellow))',
                 'track-green': 'oklch(var(--track-green))'
             },
             borderRadius: {
@@ -81,10 +86,15 @@ export default {
                 '3xl': 'calc(var(--radius) + 12px)'
             },
             boxShadow: {
-                xs: '0 1px 2px 0 rgba(0,0,0,0.05)'
+                xs: '0 1px 2px 0 rgba(0,0,0,0.05)',
+                'neon-cyan': '0 0 20px rgba(0,220,255,0.5)',
+                'neon-orange': '0 0 20px rgba(255,140,0,0.5)',
+                'neon-purple': '0 0 20px rgba(180,0,255,0.5)',
+                'neon-yellow': '0 0 20px rgba(255,220,0,0.5)'
             },
             fontFamily: {
-                sans: ['Fredoka', 'Baloo 2', 'Quicksand', 'system-ui', 'sans-serif']
+                sans: ['Satoshi', 'Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+                display: ['Bricolage Grotesque', 'Satoshi', 'system-ui', 'sans-serif']
             },
             keyframes: {
                 'accordion-down': {
